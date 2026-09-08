@@ -2,3 +2,6 @@ node_modules
 dist
 artifacts
 coverage
+generated/button-bundle-report.json
+generated/visual-regression-report.json
+generated/visual-diffs

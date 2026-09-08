@@ -13,7 +13,7 @@
     "check:exports": "tsx scripts/check-exports.ts",
     "check:visual": "node scripts/check-visual-regression.mjs",
     "check:bundle": "node scripts/check-button-bundle.mjs",
-    "check:acceptance": "pnpm generate && pnpm check:exports && pnpm typecheck && pnpm test && pnpm build && pnpm check:visual && pnpm check:bundle && pnpm pack:local",
+    "check:acceptance": "pnpm check:generated && pnpm check:exports && pnpm typecheck && pnpm test && pnpm build && pnpm check:visual && pnpm check:bundle && pnpm pack:local",
     "build": "pnpm generate && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
