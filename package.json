@@ -1,6 +1,6 @@
 {
   "name": "@coderlife/ui-core",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.2",
   "description": "Compatibility facade over Material UI with optional instrumentation runtime.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -11,6 +11,9 @@
     "generate": "pnpm generate:mui",
     "check:generated": "tsx scripts/check-generated.ts",
     "check:exports": "tsx scripts/check-exports.ts",
+    "check:visual": "node scripts/check-visual-regression.mjs",
+    "check:bundle": "node scripts/check-button-bundle.mjs",
+    "check:acceptance": "pnpm generate && pnpm check:exports && pnpm typecheck && pnpm test && pnpm build && pnpm check:visual && pnpm check:bundle && pnpm pack:local",
     "build": "pnpm generate && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
@@ -28,9 +31,11 @@
   "license": "MIT",
   "packageManager": "pnpm@11.2.2",
   "type": "module",
+  "sideEffects": false,
   "files": [
     "dist",
-    "generated",
+    "generated/mui-export-map.json",
+    "generated/mui-surface.json",
     "README.md",
     "LICENSE"
   ],
@@ -716,6 +721,10 @@
     "eslint": "9.12.0",
     "jsdom": "25.0.0",
     "prettier": "3.3.3",
+    "esbuild": "0.25.9",
+    "pixelmatch": "7.1.0",
+    "playwright": "1.55.0",
+    "pngjs": "7.0.0",
     "tsx": "4.19.1",
     "typescript": "7.0.2",
     "vitest": "2.1.1"

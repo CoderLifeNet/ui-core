@@ -266,7 +266,6 @@ async function main(): Promise<void> {
   }
 
   const surface = {
-    generatedAt: new Date().toISOString(),
     baseline: {
       react: getVersion(pkg, "react"),
       reactDom: getVersion(pkg, "react-dom"),

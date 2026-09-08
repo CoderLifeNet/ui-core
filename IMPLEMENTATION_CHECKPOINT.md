@@ -20,11 +20,14 @@ Date: 2026-09-08
 - Added `Autocomplete` wrapper and coverage tests.
 - Added explicit export/routing CI gate (`check:exports`) and integrated it into CI.
 - Added wrapped-route regression tests, including root/subpath parity under one provider.
+- Added visual regression gate (`scripts/check-visual-regression.mjs`) with Chromium screenshot parity for button, form control, portal/composed autocomplete, and themed override scenarios.
+- Added module-aware bundle gate (`scripts/check-button-bundle.mjs`) with overhead budget checks versus upstream MUI and forbidden-module assertions.
+- Added `sideEffects: false` packaging hint to preserve root-import tree-shaking.
+- Bumped package version to `0.1.0-alpha.2`, packed fresh artifact identity, and confirmed repeated pack byte stability.
 
 ## Remaining
 
-- Add representative visual regression gates (upstream vs wrapper snapshots).
-- Add stronger bundle-size/content budget gates (current checks are smoke-level).
+- None for this alpha acceptance closeout.
 
 ## Continuation Commands
 
@@ -35,5 +38,8 @@ pnpm generate
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm check:visual
+pnpm check:bundle
+pnpm check:acceptance
 pnpm pack:local
 ```

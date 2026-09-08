@@ -1,0 +1,57 @@
+{
+  "browser": "chromium",
+  "scenarios": [
+    {
+      "scenario": "button-basic",
+      "maxDiffRatio": 0.002,
+      "diffRatio": 0,
+      "mismatchedPixels": 0,
+      "totalPixels": 468000,
+      "status": "pass",
+      "artifacts": {
+        "upstream": "generated/visual-diffs/button-basic.upstream.png",
+        "wrapper": "generated/visual-diffs/button-basic.wrapper.png",
+        "diff": "generated/visual-diffs/button-basic.diff.png"
+      }
+    },
+    {
+      "scenario": "checkbox-form-control",
+      "maxDiffRatio": 0.003,
+      "diffRatio": 0,
+      "mismatchedPixels": 0,
+      "totalPixels": 468000,
+      "status": "pass",
+      "artifacts": {
+        "upstream": "generated/visual-diffs/checkbox-form-control.upstream.png",
+        "wrapper": "generated/visual-diffs/checkbox-form-control.wrapper.png",
+        "diff": "generated/visual-diffs/checkbox-form-control.diff.png"
+      }
+    },
+    {
+      "scenario": "autocomplete-portal",
+      "maxDiffRatio": 0.01,
+      "diffRatio": 0,
+      "mismatchedPixels": 0,
+      "totalPixels": 468000,
+      "status": "pass",
+      "artifacts": {
+        "upstream": "generated/visual-diffs/autocomplete-portal.upstream.png",
+        "wrapper": "generated/visual-diffs/autocomplete-portal.wrapper.png",
+        "diff": "generated/visual-diffs/autocomplete-portal.diff.png"
+      }
+    },
+    {
+      "scenario": "button-themed-override",
+      "maxDiffRatio": 0.002,
+      "diffRatio": 0,
+      "mismatchedPixels": 0,
+      "totalPixels": 468000,
+      "status": "pass",
+      "artifacts": {
+        "upstream": "generated/visual-diffs/button-themed-override.upstream.png",
+        "wrapper": "generated/visual-diffs/button-themed-override.wrapper.png",
+        "diff": "generated/visual-diffs/button-themed-override.diff.png"
+      }
+    }
+  ]
+}
