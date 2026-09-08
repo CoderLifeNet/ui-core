@@ -1,0 +1,639 @@
+{
+  "static": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./extensions": {
+      "types": "./dist/extensions/index.d.ts",
+      "default": "./dist/extensions/index.js"
+    },
+    "./analytics": {
+      "types": "./dist/analytics/index.d.ts",
+      "default": "./dist/analytics/index.js"
+    },
+    "./instrumentation": {
+      "types": "./dist/instrumentation/index.d.ts",
+      "default": "./dist/instrumentation/index.js"
+    },
+    "./lab": {
+      "types": "./dist/lab/index.d.ts",
+      "default": "./dist/lab/index.js"
+    },
+    "./icons": {
+      "types": "./dist/icons/index.d.ts",
+      "default": "./dist/icons/index.js"
+    },
+    "./coverage": "./generated/mui-surface.json"
+  },
+  "generated": {
+    "./Accordion": {
+      "types": "./dist/material/Accordion.d.ts",
+      "default": "./dist/material/Accordion.js"
+    },
+    "./AccordionActions": {
+      "types": "./dist/material/AccordionActions.d.ts",
+      "default": "./dist/material/AccordionActions.js"
+    },
+    "./AccordionDetails": {
+      "types": "./dist/material/AccordionDetails.d.ts",
+      "default": "./dist/material/AccordionDetails.js"
+    },
+    "./AccordionSummary": {
+      "types": "./dist/material/AccordionSummary.d.ts",
+      "default": "./dist/material/AccordionSummary.js"
+    },
+    "./Alert": {
+      "types": "./dist/material/Alert.d.ts",
+      "default": "./dist/material/Alert.js"
+    },
+    "./AlertTitle": {
+      "types": "./dist/material/AlertTitle.d.ts",
+      "default": "./dist/material/AlertTitle.js"
+    },
+    "./AppBar": {
+      "types": "./dist/material/AppBar.d.ts",
+      "default": "./dist/material/AppBar.js"
+    },
+    "./Autocomplete": {
+      "types": "./dist/material/Autocomplete.d.ts",
+      "default": "./dist/material/Autocomplete.js"
+    },
+    "./Avatar": {
+      "types": "./dist/material/Avatar.d.ts",
+      "default": "./dist/material/Avatar.js"
+    },
+    "./AvatarGroup": {
+      "types": "./dist/material/AvatarGroup.d.ts",
+      "default": "./dist/material/AvatarGroup.js"
+    },
+    "./Backdrop": {
+      "types": "./dist/material/Backdrop.d.ts",
+      "default": "./dist/material/Backdrop.js"
+    },
+    "./Badge": {
+      "types": "./dist/material/Badge.d.ts",
+      "default": "./dist/material/Badge.js"
+    },
+    "./BottomNavigation": {
+      "types": "./dist/material/BottomNavigation.d.ts",
+      "default": "./dist/material/BottomNavigation.js"
+    },
+    "./BottomNavigationAction": {
+      "types": "./dist/material/BottomNavigationAction.d.ts",
+      "default": "./dist/material/BottomNavigationAction.js"
+    },
+    "./Box": {
+      "types": "./dist/material/Box.d.ts",
+      "default": "./dist/material/Box.js"
+    },
+    "./Breadcrumbs": {
+      "types": "./dist/material/Breadcrumbs.d.ts",
+      "default": "./dist/material/Breadcrumbs.js"
+    },
+    "./Button": {
+      "types": "./dist/material/Button.d.ts",
+      "default": "./dist/material/Button.js"
+    },
+    "./ButtonBase": {
+      "types": "./dist/material/ButtonBase.d.ts",
+      "default": "./dist/material/ButtonBase.js"
+    },
+    "./ButtonBase/TouchRipple": {
+      "types": "./dist/material/ButtonBase/TouchRipple.d.ts",
+      "default": "./dist/material/ButtonBase/TouchRipple.js"
+    },
+    "./ButtonGroup": {
+      "types": "./dist/material/ButtonGroup.d.ts",
+      "default": "./dist/material/ButtonGroup.js"
+    },
+    "./Card": {
+      "types": "./dist/material/Card.d.ts",
+      "default": "./dist/material/Card.js"
+    },
+    "./CardActionArea": {
+      "types": "./dist/material/CardActionArea.d.ts",
+      "default": "./dist/material/CardActionArea.js"
+    },
+    "./CardActions": {
+      "types": "./dist/material/CardActions.d.ts",
+      "default": "./dist/material/CardActions.js"
+    },
+    "./CardContent": {
+      "types": "./dist/material/CardContent.d.ts",
+      "default": "./dist/material/CardContent.js"
+    },
+    "./CardHeader": {
+      "types": "./dist/material/CardHeader.d.ts",
+      "default": "./dist/material/CardHeader.js"
+    },
+    "./CardMedia": {
+      "types": "./dist/material/CardMedia.d.ts",
+      "default": "./dist/material/CardMedia.js"
+    },
+    "./Checkbox": {
+      "types": "./dist/material/Checkbox.d.ts",
+      "default": "./dist/material/Checkbox.js"
+    },
+    "./Chip": {
+      "types": "./dist/material/Chip.d.ts",
+      "default": "./dist/material/Chip.js"
+    },
+    "./CircularProgress": {
+      "types": "./dist/material/CircularProgress.d.ts",
+      "default": "./dist/material/CircularProgress.js"
+    },
+    "./ClickAwayListener": {
+      "types": "./dist/material/ClickAwayListener.d.ts",
+      "default": "./dist/material/ClickAwayListener.js"
+    },
+    "./Collapse": {
+      "types": "./dist/material/Collapse.d.ts",
+      "default": "./dist/material/Collapse.js"
+    },
+    "./Container": {
+      "types": "./dist/material/Container.d.ts",
+      "default": "./dist/material/Container.js"
+    },
+    "./CssBaseline": {
+      "types": "./dist/material/CssBaseline.d.ts",
+      "default": "./dist/material/CssBaseline.js"
+    },
+    "./DefaultPropsProvider": {
+      "types": "./dist/material/DefaultPropsProvider.d.ts",
+      "default": "./dist/material/DefaultPropsProvider.js"
+    },
+    "./Dialog": {
+      "types": "./dist/material/Dialog.d.ts",
+      "default": "./dist/material/Dialog.js"
+    },
+    "./DialogActions": {
+      "types": "./dist/material/DialogActions.d.ts",
+      "default": "./dist/material/DialogActions.js"
+    },
+    "./DialogContent": {
+      "types": "./dist/material/DialogContent.d.ts",
+      "default": "./dist/material/DialogContent.js"
+    },
+    "./DialogContentText": {
+      "types": "./dist/material/DialogContentText.d.ts",
+      "default": "./dist/material/DialogContentText.js"
+    },
+    "./DialogTitle": {
+      "types": "./dist/material/DialogTitle.d.ts",
+      "default": "./dist/material/DialogTitle.js"
+    },
+    "./Divider": {
+      "types": "./dist/material/Divider.d.ts",
+      "default": "./dist/material/Divider.js"
+    },
+    "./Drawer": {
+      "types": "./dist/material/Drawer.d.ts",
+      "default": "./dist/material/Drawer.js"
+    },
+    "./Fab": {
+      "types": "./dist/material/Fab.d.ts",
+      "default": "./dist/material/Fab.js"
+    },
+    "./Fade": {
+      "types": "./dist/material/Fade.d.ts",
+      "default": "./dist/material/Fade.js"
+    },
+    "./FilledInput": {
+      "types": "./dist/material/FilledInput.d.ts",
+      "default": "./dist/material/FilledInput.js"
+    },
+    "./FormControl": {
+      "types": "./dist/material/FormControl.d.ts",
+      "default": "./dist/material/FormControl.js"
+    },
+    "./FormControlLabel": {
+      "types": "./dist/material/FormControlLabel.d.ts",
+      "default": "./dist/material/FormControlLabel.js"
+    },
+    "./FormGroup": {
+      "types": "./dist/material/FormGroup.d.ts",
+      "default": "./dist/material/FormGroup.js"
+    },
+    "./FormHelperText": {
+      "types": "./dist/material/FormHelperText.d.ts",
+      "default": "./dist/material/FormHelperText.js"
+    },
+    "./FormLabel": {
+      "types": "./dist/material/FormLabel.d.ts",
+      "default": "./dist/material/FormLabel.js"
+    },
+    "./GlobalStyles": {
+      "types": "./dist/material/GlobalStyles.d.ts",
+      "default": "./dist/material/GlobalStyles.js"
+    },
+    "./Grid": {
+      "types": "./dist/material/Grid.d.ts",
+      "default": "./dist/material/Grid.js"
+    },
+    "./Grow": {
+      "types": "./dist/material/Grow.d.ts",
+      "default": "./dist/material/Grow.js"
+    },
+    "./Icon": {
+      "types": "./dist/material/Icon.d.ts",
+      "default": "./dist/material/Icon.js"
+    },
+    "./IconButton": {
+      "types": "./dist/material/IconButton.d.ts",
+      "default": "./dist/material/IconButton.js"
+    },
+    "./ImageList": {
+      "types": "./dist/material/ImageList.d.ts",
+      "default": "./dist/material/ImageList.js"
+    },
+    "./ImageListItem": {
+      "types": "./dist/material/ImageListItem.d.ts",
+      "default": "./dist/material/ImageListItem.js"
+    },
+    "./ImageListItemBar": {
+      "types": "./dist/material/ImageListItemBar.d.ts",
+      "default": "./dist/material/ImageListItemBar.js"
+    },
+    "./InitColorSchemeScript": {
+      "types": "./dist/material/InitColorSchemeScript.d.ts",
+      "default": "./dist/material/InitColorSchemeScript.js"
+    },
+    "./Input": {
+      "types": "./dist/material/Input.d.ts",
+      "default": "./dist/material/Input.js"
+    },
+    "./InputAdornment": {
+      "types": "./dist/material/InputAdornment.d.ts",
+      "default": "./dist/material/InputAdornment.js"
+    },
+    "./InputBase": {
+      "types": "./dist/material/InputBase.d.ts",
+      "default": "./dist/material/InputBase.js"
+    },
+    "./InputLabel": {
+      "types": "./dist/material/InputLabel.d.ts",
+      "default": "./dist/material/InputLabel.js"
+    },
+    "./LinearProgress": {
+      "types": "./dist/material/LinearProgress.d.ts",
+      "default": "./dist/material/LinearProgress.js"
+    },
+    "./Link": {
+      "types": "./dist/material/Link.d.ts",
+      "default": "./dist/material/Link.js"
+    },
+    "./List": {
+      "types": "./dist/material/List.d.ts",
+      "default": "./dist/material/List.js"
+    },
+    "./ListItem": {
+      "types": "./dist/material/ListItem.d.ts",
+      "default": "./dist/material/ListItem.js"
+    },
+    "./ListItemAvatar": {
+      "types": "./dist/material/ListItemAvatar.d.ts",
+      "default": "./dist/material/ListItemAvatar.js"
+    },
+    "./ListItemButton": {
+      "types": "./dist/material/ListItemButton.d.ts",
+      "default": "./dist/material/ListItemButton.js"
+    },
+    "./ListItemIcon": {
+      "types": "./dist/material/ListItemIcon.d.ts",
+      "default": "./dist/material/ListItemIcon.js"
+    },
+    "./ListItemSecondaryAction": {
+      "types": "./dist/material/ListItemSecondaryAction.d.ts",
+      "default": "./dist/material/ListItemSecondaryAction.js"
+    },
+    "./ListItemText": {
+      "types": "./dist/material/ListItemText.d.ts",
+      "default": "./dist/material/ListItemText.js"
+    },
+    "./ListSubheader": {
+      "types": "./dist/material/ListSubheader.d.ts",
+      "default": "./dist/material/ListSubheader.js"
+    },
+    "./Menu": {
+      "types": "./dist/material/Menu.d.ts",
+      "default": "./dist/material/Menu.js"
+    },
+    "./MenuItem": {
+      "types": "./dist/material/MenuItem.d.ts",
+      "default": "./dist/material/MenuItem.js"
+    },
+    "./MenuList": {
+      "types": "./dist/material/MenuList.d.ts",
+      "default": "./dist/material/MenuList.js"
+    },
+    "./MobileStepper": {
+      "types": "./dist/material/MobileStepper.d.ts",
+      "default": "./dist/material/MobileStepper.js"
+    },
+    "./Modal": {
+      "types": "./dist/material/Modal.d.ts",
+      "default": "./dist/material/Modal.js"
+    },
+    "./NativeSelect": {
+      "types": "./dist/material/NativeSelect.d.ts",
+      "default": "./dist/material/NativeSelect.js"
+    },
+    "./NoSsr": {
+      "types": "./dist/material/NoSsr.d.ts",
+      "default": "./dist/material/NoSsr.js"
+    },
+    "./OutlinedInput": {
+      "types": "./dist/material/OutlinedInput.d.ts",
+      "default": "./dist/material/OutlinedInput.js"
+    },
+    "./OverridableComponent": {
+      "types": "./dist/material/OverridableComponent.d.ts",
+      "default": "./dist/material/OverridableComponent.js"
+    },
+    "./Pagination": {
+      "types": "./dist/material/Pagination.d.ts",
+      "default": "./dist/material/Pagination.js"
+    },
+    "./PaginationItem": {
+      "types": "./dist/material/PaginationItem.d.ts",
+      "default": "./dist/material/PaginationItem.js"
+    },
+    "./Paper": {
+      "types": "./dist/material/Paper.d.ts",
+      "default": "./dist/material/Paper.js"
+    },
+    "./PigmentContainer": {
+      "types": "./dist/material/PigmentContainer.d.ts",
+      "default": "./dist/material/PigmentContainer.js"
+    },
+    "./PigmentGrid": {
+      "types": "./dist/material/PigmentGrid.d.ts",
+      "default": "./dist/material/PigmentGrid.js"
+    },
+    "./PigmentStack": {
+      "types": "./dist/material/PigmentStack.d.ts",
+      "default": "./dist/material/PigmentStack.js"
+    },
+    "./Popover": {
+      "types": "./dist/material/Popover.d.ts",
+      "default": "./dist/material/Popover.js"
+    },
+    "./Popper": {
+      "types": "./dist/material/Popper.d.ts",
+      "default": "./dist/material/Popper.js"
+    },
+    "./Portal": {
+      "types": "./dist/material/Portal.d.ts",
+      "default": "./dist/material/Portal.js"
+    },
+    "./Radio": {
+      "types": "./dist/material/Radio.d.ts",
+      "default": "./dist/material/Radio.js"
+    },
+    "./RadioGroup": {
+      "types": "./dist/material/RadioGroup.d.ts",
+      "default": "./dist/material/RadioGroup.js"
+    },
+    "./Rating": {
+      "types": "./dist/material/Rating.d.ts",
+      "default": "./dist/material/Rating.js"
+    },
+    "./ScopedCssBaseline": {
+      "types": "./dist/material/ScopedCssBaseline.d.ts",
+      "default": "./dist/material/ScopedCssBaseline.js"
+    },
+    "./Select": {
+      "types": "./dist/material/Select.d.ts",
+      "default": "./dist/material/Select.js"
+    },
+    "./Skeleton": {
+      "types": "./dist/material/Skeleton.d.ts",
+      "default": "./dist/material/Skeleton.js"
+    },
+    "./Slide": {
+      "types": "./dist/material/Slide.d.ts",
+      "default": "./dist/material/Slide.js"
+    },
+    "./Slider": {
+      "types": "./dist/material/Slider.d.ts",
+      "default": "./dist/material/Slider.js"
+    },
+    "./Snackbar": {
+      "types": "./dist/material/Snackbar.d.ts",
+      "default": "./dist/material/Snackbar.js"
+    },
+    "./SnackbarContent": {
+      "types": "./dist/material/SnackbarContent.d.ts",
+      "default": "./dist/material/SnackbarContent.js"
+    },
+    "./SpeedDial": {
+      "types": "./dist/material/SpeedDial.d.ts",
+      "default": "./dist/material/SpeedDial.js"
+    },
+    "./SpeedDialAction": {
+      "types": "./dist/material/SpeedDialAction.d.ts",
+      "default": "./dist/material/SpeedDialAction.js"
+    },
+    "./SpeedDialIcon": {
+      "types": "./dist/material/SpeedDialIcon.d.ts",
+      "default": "./dist/material/SpeedDialIcon.js"
+    },
+    "./Stack": {
+      "types": "./dist/material/Stack.d.ts",
+      "default": "./dist/material/Stack.js"
+    },
+    "./Step": {
+      "types": "./dist/material/Step.d.ts",
+      "default": "./dist/material/Step.js"
+    },
+    "./StepButton": {
+      "types": "./dist/material/StepButton.d.ts",
+      "default": "./dist/material/StepButton.js"
+    },
+    "./StepConnector": {
+      "types": "./dist/material/StepConnector.d.ts",
+      "default": "./dist/material/StepConnector.js"
+    },
+    "./StepContent": {
+      "types": "./dist/material/StepContent.d.ts",
+      "default": "./dist/material/StepContent.js"
+    },
+    "./StepIcon": {
+      "types": "./dist/material/StepIcon.d.ts",
+      "default": "./dist/material/StepIcon.js"
+    },
+    "./StepLabel": {
+      "types": "./dist/material/StepLabel.d.ts",
+      "default": "./dist/material/StepLabel.js"
+    },
+    "./Stepper": {
+      "types": "./dist/material/Stepper.d.ts",
+      "default": "./dist/material/Stepper.js"
+    },
+    "./SvgIcon": {
+      "types": "./dist/material/SvgIcon.d.ts",
+      "default": "./dist/material/SvgIcon.js"
+    },
+    "./SwipeableDrawer": {
+      "types": "./dist/material/SwipeableDrawer.d.ts",
+      "default": "./dist/material/SwipeableDrawer.js"
+    },
+    "./Switch": {
+      "types": "./dist/material/Switch.d.ts",
+      "default": "./dist/material/Switch.js"
+    },
+    "./Tab": {
+      "types": "./dist/material/Tab.d.ts",
+      "default": "./dist/material/Tab.js"
+    },
+    "./TabScrollButton": {
+      "types": "./dist/material/TabScrollButton.d.ts",
+      "default": "./dist/material/TabScrollButton.js"
+    },
+    "./Table": {
+      "types": "./dist/material/Table.d.ts",
+      "default": "./dist/material/Table.js"
+    },
+    "./TableBody": {
+      "types": "./dist/material/TableBody.d.ts",
+      "default": "./dist/material/TableBody.js"
+    },
+    "./TableCell": {
+      "types": "./dist/material/TableCell.d.ts",
+      "default": "./dist/material/TableCell.js"
+    },
+    "./TableContainer": {
+      "types": "./dist/material/TableContainer.d.ts",
+      "default": "./dist/material/TableContainer.js"
+    },
+    "./TableFooter": {
+      "types": "./dist/material/TableFooter.d.ts",
+      "default": "./dist/material/TableFooter.js"
+    },
+    "./TableHead": {
+      "types": "./dist/material/TableHead.d.ts",
+      "default": "./dist/material/TableHead.js"
+    },
+    "./TablePagination": {
+      "types": "./dist/material/TablePagination.d.ts",
+      "default": "./dist/material/TablePagination.js"
+    },
+    "./TablePaginationActions": {
+      "types": "./dist/material/TablePaginationActions.d.ts",
+      "default": "./dist/material/TablePaginationActions.js"
+    },
+    "./TableRow": {
+      "types": "./dist/material/TableRow.d.ts",
+      "default": "./dist/material/TableRow.js"
+    },
+    "./TableSortLabel": {
+      "types": "./dist/material/TableSortLabel.d.ts",
+      "default": "./dist/material/TableSortLabel.js"
+    },
+    "./Tabs": {
+      "types": "./dist/material/Tabs.d.ts",
+      "default": "./dist/material/Tabs.js"
+    },
+    "./TextField": {
+      "types": "./dist/material/TextField.d.ts",
+      "default": "./dist/material/TextField.js"
+    },
+    "./TextareaAutosize": {
+      "types": "./dist/material/TextareaAutosize.d.ts",
+      "default": "./dist/material/TextareaAutosize.js"
+    },
+    "./ToggleButton": {
+      "types": "./dist/material/ToggleButton.d.ts",
+      "default": "./dist/material/ToggleButton.js"
+    },
+    "./ToggleButtonGroup": {
+      "types": "./dist/material/ToggleButtonGroup.d.ts",
+      "default": "./dist/material/ToggleButtonGroup.js"
+    },
+    "./Toolbar": {
+      "types": "./dist/material/Toolbar.d.ts",
+      "default": "./dist/material/Toolbar.js"
+    },
+    "./Tooltip": {
+      "types": "./dist/material/Tooltip.d.ts",
+      "default": "./dist/material/Tooltip.js"
+    },
+    "./Typography": {
+      "types": "./dist/material/Typography.d.ts",
+      "default": "./dist/material/Typography.js"
+    },
+    "./Zoom": {
+      "types": "./dist/material/Zoom.d.ts",
+      "default": "./dist/material/Zoom.js"
+    },
+    "./className": {
+      "types": "./dist/material/className.d.ts",
+      "default": "./dist/material/className.js"
+    },
+    "./colors": {
+      "types": "./dist/material/colors.d.ts",
+      "default": "./dist/material/colors.js"
+    },
+    "./darkScrollbar": {
+      "types": "./dist/material/darkScrollbar.d.ts",
+      "default": "./dist/material/darkScrollbar.js"
+    },
+    "./generateUtilityClass": {
+      "types": "./dist/material/generateUtilityClass.d.ts",
+      "default": "./dist/material/generateUtilityClass.js"
+    },
+    "./generateUtilityClasses": {
+      "types": "./dist/material/generateUtilityClasses.d.ts",
+      "default": "./dist/material/generateUtilityClasses.js"
+    },
+    "./locale": {
+      "types": "./dist/material/locale.d.ts",
+      "default": "./dist/material/locale.js"
+    },
+    "./styles": {
+      "types": "./dist/material/styles.d.ts",
+      "default": "./dist/material/styles.js"
+    },
+    "./themeCssVarsAugmentation": {
+      "types": "./dist/material/themeCssVarsAugmentation.d.ts",
+      "default": "./dist/material/themeCssVarsAugmentation.js"
+    },
+    "./transitions": {
+      "types": "./dist/material/transitions.d.ts",
+      "default": "./dist/material/transitions.js"
+    },
+    "./useAutocomplete": {
+      "types": "./dist/material/useAutocomplete.d.ts",
+      "default": "./dist/material/useAutocomplete.js"
+    },
+    "./useLazyRipple": {
+      "types": "./dist/material/useLazyRipple.d.ts",
+      "default": "./dist/material/useLazyRipple.js"
+    },
+    "./useMediaQuery": {
+      "types": "./dist/material/useMediaQuery.d.ts",
+      "default": "./dist/material/useMediaQuery.js"
+    },
+    "./usePagination": {
+      "types": "./dist/material/usePagination.d.ts",
+      "default": "./dist/material/usePagination.js"
+    },
+    "./useScrollTrigger": {
+      "types": "./dist/material/useScrollTrigger.d.ts",
+      "default": "./dist/material/useScrollTrigger.js"
+    },
+    "./utils": {
+      "types": "./dist/material/utils.d.ts",
+      "default": "./dist/material/utils.js"
+    },
+    "./version": {
+      "types": "./dist/material/version.d.ts",
+      "default": "./dist/material/version.js"
+    },
+    "./zero-styled": {
+      "types": "./dist/material/zero-styled.d.ts",
+      "default": "./dist/material/zero-styled.js"
+    }
+  }
+}

@@ -1,0 +1,1091 @@
+{
+  "generatedAt": "2026-09-08T15:38:57.450Z",
+  "baseline": {
+    "react": "^19.2.8",
+    "reactDom": "^19.2.8",
+    "typescript": "7.0.2",
+    "muiMaterial": "9.4.0",
+    "stylingEngine": {
+      "emotionReact": "^11.14.0",
+      "emotionStyled": "^11.14.1"
+    }
+  },
+  "parityScope": {
+    "stableMaterialSurface": "full @mui/material public export map and declaration-backed subpaths",
+    "optional": [
+      "@mui/lab via ./lab",
+      "@mui/icons-material via ./icons"
+    ],
+    "excludedFromParityClaim": [
+      "MUI X packages",
+      "private internal implementation paths",
+      "documentation-only recipes"
+    ]
+  },
+  "entries": [
+    {
+      "category": "renderable-component",
+      "subpath": "./Accordion",
+      "moduleSpecifier": "@mui/material/Accordion",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./AccordionActions",
+      "moduleSpecifier": "@mui/material/AccordionActions",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./AccordionDetails",
+      "moduleSpecifier": "@mui/material/AccordionDetails",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./AccordionSummary",
+      "moduleSpecifier": "@mui/material/AccordionSummary",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Alert",
+      "moduleSpecifier": "@mui/material/Alert",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./AlertTitle",
+      "moduleSpecifier": "@mui/material/AlertTitle",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./AppBar",
+      "moduleSpecifier": "@mui/material/AppBar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Autocomplete",
+      "moduleSpecifier": "@mui/material/Autocomplete",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Avatar",
+      "moduleSpecifier": "@mui/material/Avatar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./AvatarGroup",
+      "moduleSpecifier": "@mui/material/AvatarGroup",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Backdrop",
+      "moduleSpecifier": "@mui/material/Backdrop",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Badge",
+      "moduleSpecifier": "@mui/material/Badge",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./BottomNavigation",
+      "moduleSpecifier": "@mui/material/BottomNavigation",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./BottomNavigationAction",
+      "moduleSpecifier": "@mui/material/BottomNavigationAction",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Box",
+      "moduleSpecifier": "@mui/material/Box",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Breadcrumbs",
+      "moduleSpecifier": "@mui/material/Breadcrumbs",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Button",
+      "moduleSpecifier": "@mui/material/Button",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ButtonBase",
+      "moduleSpecifier": "@mui/material/ButtonBase",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ButtonBase/TouchRipple",
+      "moduleSpecifier": "@mui/material/ButtonBase/TouchRipple",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ButtonGroup",
+      "moduleSpecifier": "@mui/material/ButtonGroup",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Card",
+      "moduleSpecifier": "@mui/material/Card",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CardActionArea",
+      "moduleSpecifier": "@mui/material/CardActionArea",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CardActions",
+      "moduleSpecifier": "@mui/material/CardActions",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CardContent",
+      "moduleSpecifier": "@mui/material/CardContent",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CardHeader",
+      "moduleSpecifier": "@mui/material/CardHeader",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CardMedia",
+      "moduleSpecifier": "@mui/material/CardMedia",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Checkbox",
+      "moduleSpecifier": "@mui/material/Checkbox",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Chip",
+      "moduleSpecifier": "@mui/material/Chip",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CircularProgress",
+      "moduleSpecifier": "@mui/material/CircularProgress",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "type-only",
+      "subpath": "./ClickAwayListener",
+      "moduleSpecifier": "@mui/material/ClickAwayListener",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Collapse",
+      "moduleSpecifier": "@mui/material/Collapse",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Container",
+      "moduleSpecifier": "@mui/material/Container",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./CssBaseline",
+      "moduleSpecifier": "@mui/material/CssBaseline",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "context-provider",
+      "subpath": "./DefaultPropsProvider",
+      "moduleSpecifier": "@mui/material/DefaultPropsProvider",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Dialog",
+      "moduleSpecifier": "@mui/material/Dialog",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./DialogActions",
+      "moduleSpecifier": "@mui/material/DialogActions",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./DialogContent",
+      "moduleSpecifier": "@mui/material/DialogContent",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./DialogContentText",
+      "moduleSpecifier": "@mui/material/DialogContentText",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./DialogTitle",
+      "moduleSpecifier": "@mui/material/DialogTitle",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Divider",
+      "moduleSpecifier": "@mui/material/Divider",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Drawer",
+      "moduleSpecifier": "@mui/material/Drawer",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Fab",
+      "moduleSpecifier": "@mui/material/Fab",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Fade",
+      "moduleSpecifier": "@mui/material/Fade",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./FilledInput",
+      "moduleSpecifier": "@mui/material/FilledInput",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./FormControl",
+      "moduleSpecifier": "@mui/material/FormControl",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./FormControlLabel",
+      "moduleSpecifier": "@mui/material/FormControlLabel",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./FormGroup",
+      "moduleSpecifier": "@mui/material/FormGroup",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./FormHelperText",
+      "moduleSpecifier": "@mui/material/FormHelperText",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./FormLabel",
+      "moduleSpecifier": "@mui/material/FormLabel",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./GlobalStyles",
+      "moduleSpecifier": "@mui/material/GlobalStyles",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Grid",
+      "moduleSpecifier": "@mui/material/Grid",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Grow",
+      "moduleSpecifier": "@mui/material/Grow",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Icon",
+      "moduleSpecifier": "@mui/material/Icon",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./IconButton",
+      "moduleSpecifier": "@mui/material/IconButton",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ImageList",
+      "moduleSpecifier": "@mui/material/ImageList",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ImageListItem",
+      "moduleSpecifier": "@mui/material/ImageListItem",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ImageListItemBar",
+      "moduleSpecifier": "@mui/material/ImageListItemBar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./InitColorSchemeScript",
+      "moduleSpecifier": "@mui/material/InitColorSchemeScript",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Input",
+      "moduleSpecifier": "@mui/material/Input",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./InputAdornment",
+      "moduleSpecifier": "@mui/material/InputAdornment",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./InputBase",
+      "moduleSpecifier": "@mui/material/InputBase",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./InputLabel",
+      "moduleSpecifier": "@mui/material/InputLabel",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./LinearProgress",
+      "moduleSpecifier": "@mui/material/LinearProgress",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Link",
+      "moduleSpecifier": "@mui/material/Link",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./List",
+      "moduleSpecifier": "@mui/material/List",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListItem",
+      "moduleSpecifier": "@mui/material/ListItem",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListItemAvatar",
+      "moduleSpecifier": "@mui/material/ListItemAvatar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListItemButton",
+      "moduleSpecifier": "@mui/material/ListItemButton",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListItemIcon",
+      "moduleSpecifier": "@mui/material/ListItemIcon",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListItemSecondaryAction",
+      "moduleSpecifier": "@mui/material/ListItemSecondaryAction",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListItemText",
+      "moduleSpecifier": "@mui/material/ListItemText",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ListSubheader",
+      "moduleSpecifier": "@mui/material/ListSubheader",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Menu",
+      "moduleSpecifier": "@mui/material/Menu",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./MenuItem",
+      "moduleSpecifier": "@mui/material/MenuItem",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./MenuList",
+      "moduleSpecifier": "@mui/material/MenuList",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./MobileStepper",
+      "moduleSpecifier": "@mui/material/MobileStepper",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Modal",
+      "moduleSpecifier": "@mui/material/Modal",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./NativeSelect",
+      "moduleSpecifier": "@mui/material/NativeSelect",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./NoSsr",
+      "moduleSpecifier": "@mui/material/NoSsr",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./OutlinedInput",
+      "moduleSpecifier": "@mui/material/OutlinedInput",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "type-only",
+      "subpath": "./OverridableComponent",
+      "moduleSpecifier": "@mui/material/OverridableComponent",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Pagination",
+      "moduleSpecifier": "@mui/material/Pagination",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./PaginationItem",
+      "moduleSpecifier": "@mui/material/PaginationItem",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "type-only",
+      "subpath": "./Paper",
+      "moduleSpecifier": "@mui/material/Paper",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./PigmentContainer",
+      "moduleSpecifier": "@mui/material/PigmentContainer",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./PigmentGrid",
+      "moduleSpecifier": "@mui/material/PigmentGrid",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./PigmentStack",
+      "moduleSpecifier": "@mui/material/PigmentStack",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Popover",
+      "moduleSpecifier": "@mui/material/Popover",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Popper",
+      "moduleSpecifier": "@mui/material/Popper",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Portal",
+      "moduleSpecifier": "@mui/material/Portal",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Radio",
+      "moduleSpecifier": "@mui/material/Radio",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./RadioGroup",
+      "moduleSpecifier": "@mui/material/RadioGroup",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Rating",
+      "moduleSpecifier": "@mui/material/Rating",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ScopedCssBaseline",
+      "moduleSpecifier": "@mui/material/ScopedCssBaseline",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Select",
+      "moduleSpecifier": "@mui/material/Select",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Skeleton",
+      "moduleSpecifier": "@mui/material/Skeleton",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Slide",
+      "moduleSpecifier": "@mui/material/Slide",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Slider",
+      "moduleSpecifier": "@mui/material/Slider",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Snackbar",
+      "moduleSpecifier": "@mui/material/Snackbar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./SnackbarContent",
+      "moduleSpecifier": "@mui/material/SnackbarContent",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./SpeedDial",
+      "moduleSpecifier": "@mui/material/SpeedDial",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./SpeedDialAction",
+      "moduleSpecifier": "@mui/material/SpeedDialAction",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./SpeedDialIcon",
+      "moduleSpecifier": "@mui/material/SpeedDialIcon",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Stack",
+      "moduleSpecifier": "@mui/material/Stack",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Step",
+      "moduleSpecifier": "@mui/material/Step",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./StepButton",
+      "moduleSpecifier": "@mui/material/StepButton",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./StepConnector",
+      "moduleSpecifier": "@mui/material/StepConnector",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./StepContent",
+      "moduleSpecifier": "@mui/material/StepContent",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./StepIcon",
+      "moduleSpecifier": "@mui/material/StepIcon",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./StepLabel",
+      "moduleSpecifier": "@mui/material/StepLabel",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Stepper",
+      "moduleSpecifier": "@mui/material/Stepper",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./SvgIcon",
+      "moduleSpecifier": "@mui/material/SvgIcon",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./SwipeableDrawer",
+      "moduleSpecifier": "@mui/material/SwipeableDrawer",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Switch",
+      "moduleSpecifier": "@mui/material/Switch",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Tab",
+      "moduleSpecifier": "@mui/material/Tab",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TabScrollButton",
+      "moduleSpecifier": "@mui/material/TabScrollButton",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Table",
+      "moduleSpecifier": "@mui/material/Table",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableBody",
+      "moduleSpecifier": "@mui/material/TableBody",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableCell",
+      "moduleSpecifier": "@mui/material/TableCell",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableContainer",
+      "moduleSpecifier": "@mui/material/TableContainer",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableFooter",
+      "moduleSpecifier": "@mui/material/TableFooter",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableHead",
+      "moduleSpecifier": "@mui/material/TableHead",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TablePagination",
+      "moduleSpecifier": "@mui/material/TablePagination",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TablePaginationActions",
+      "moduleSpecifier": "@mui/material/TablePaginationActions",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableRow",
+      "moduleSpecifier": "@mui/material/TableRow",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TableSortLabel",
+      "moduleSpecifier": "@mui/material/TableSortLabel",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Tabs",
+      "moduleSpecifier": "@mui/material/Tabs",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TextField",
+      "moduleSpecifier": "@mui/material/TextField",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./TextareaAutosize",
+      "moduleSpecifier": "@mui/material/TextareaAutosize",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ToggleButton",
+      "moduleSpecifier": "@mui/material/ToggleButton",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./ToggleButtonGroup",
+      "moduleSpecifier": "@mui/material/ToggleButtonGroup",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Toolbar",
+      "moduleSpecifier": "@mui/material/Toolbar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Tooltip",
+      "moduleSpecifier": "@mui/material/Tooltip",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Typography",
+      "moduleSpecifier": "@mui/material/Typography",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "renderable-component",
+      "subpath": "./Zoom",
+      "moduleSpecifier": "@mui/material/Zoom",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "documented-public-subpath",
+      "subpath": "./className",
+      "moduleSpecifier": "@mui/material/className",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "constant-or-style-helper",
+      "subpath": "./colors",
+      "moduleSpecifier": "@mui/material/colors",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "documented-public-subpath",
+      "subpath": "./darkScrollbar",
+      "moduleSpecifier": "@mui/material/darkScrollbar",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "type-only",
+      "subpath": "./generateUtilityClass",
+      "moduleSpecifier": "@mui/material/generateUtilityClass",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "documented-public-subpath",
+      "subpath": "./generateUtilityClasses",
+      "moduleSpecifier": "@mui/material/generateUtilityClasses",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "documented-public-subpath",
+      "subpath": "./locale",
+      "moduleSpecifier": "@mui/material/locale",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "constant-or-style-helper",
+      "subpath": "./styles",
+      "moduleSpecifier": "@mui/material/styles",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "documented-public-subpath",
+      "subpath": "./themeCssVarsAugmentation",
+      "moduleSpecifier": "@mui/material/themeCssVarsAugmentation",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "type-only",
+      "subpath": "./transitions",
+      "moduleSpecifier": "@mui/material/transitions",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "hook",
+      "subpath": "./useAutocomplete",
+      "moduleSpecifier": "@mui/material/useAutocomplete",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "hook",
+      "subpath": "./useLazyRipple",
+      "moduleSpecifier": "@mui/material/useLazyRipple",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "hook",
+      "subpath": "./useMediaQuery",
+      "moduleSpecifier": "@mui/material/useMediaQuery",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "hook",
+      "subpath": "./usePagination",
+      "moduleSpecifier": "@mui/material/usePagination",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "hook",
+      "subpath": "./useScrollTrigger",
+      "moduleSpecifier": "@mui/material/useScrollTrigger",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "constant-or-style-helper",
+      "subpath": "./utils",
+      "moduleSpecifier": "@mui/material/utils",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "documented-public-subpath",
+      "subpath": "./version",
+      "moduleSpecifier": "@mui/material/version",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "utility-or-factory",
+      "subpath": "./zero-styled",
+      "moduleSpecifier": "@mui/material/zero-styled",
+      "hasDefaultExport": false,
+      "notes": "Generated from installed package export metadata and declaration files."
+    }
+  ]
+}
