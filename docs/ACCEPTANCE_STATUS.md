@@ -47,7 +47,7 @@ scripts. CI packs the current source and downstream verification records those b
 ## First Remote CI
 
 - Proposed repository: `CoderLifeNet/ui-core` (not created by this pass).
-- Node 22, pnpm 11.2.2; standalone frozen install, Chromium installation (Linux
+- Node 22, pnpm 11.2.2; repository-local workspace frozen install, Chromium installation (Linux
   dependencies included), then `pnpm check:acceptance`. No sibling checkout needed.
 - Alpha.2 application behavior and runtime/tooling dependency versions are preserved.
 
