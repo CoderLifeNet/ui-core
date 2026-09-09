@@ -22,6 +22,9 @@ interface ExportEntry {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
+const outputRoot = process.env.UI_CORE_GENERATED_OUTPUT_DIR
+  ? path.resolve(process.env.UI_CORE_GENERATED_OUTPUT_DIR)
+  : repoRoot;
 const muiPkgPath = path.join(repoRoot, "node_modules", "@mui", "material", "package.json");
 const muiRoot = path.join(repoRoot, "node_modules", "@mui", "material");
 
@@ -210,7 +213,7 @@ async function main(): Promise<void> {
     ? Object.keys(muiPkg.exports).filter(isStableMaterialSubpath).sort()
     : await collectPublicMaterialSubpaths();
 
-  const materialDir = path.join(repoRoot, "src", "material");
+  const materialDir = path.join(outputRoot, "src", "material");
   await rm(materialDir, { recursive: true, force: true });
   await mkdir(materialDir, { recursive: true });
 
@@ -284,11 +287,11 @@ async function main(): Promise<void> {
     entries: inventory
   };
 
-  await mkdir(path.join(repoRoot, "generated"), { recursive: true });
-  await writeFile(path.join(repoRoot, "generated", "mui-surface.json"), `${JSON.stringify(surface, null, 2)}\n`, "utf8");
+  await mkdir(path.join(outputRoot, "generated"), { recursive: true });
+  await writeFile(path.join(outputRoot, "generated", "mui-surface.json"), `${JSON.stringify(surface, null, 2)}\n`, "utf8");
 
   await writeFile(
-    path.join(repoRoot, "generated", "mui-export-map.json"),
+    path.join(outputRoot, "generated", "mui-export-map.json"),
     `${JSON.stringify(
       {
         static: STATIC_EXPORTS,
@@ -305,18 +308,18 @@ async function main(): Promise<void> {
     ...dynamicExports
   };
 
-  await writeFile(path.join(repoRoot, "package.json"), `${JSON.stringify(pkg, null, 2)}\n`, "utf8");
+  await writeFile(path.join(outputRoot, "package.json"), `${JSON.stringify(pkg, null, 2)}\n`, "utf8");
 
-  await mkdir(path.join(repoRoot, "src", "lab"), { recursive: true });
+  await mkdir(path.join(outputRoot, "src", "lab"), { recursive: true });
   await writeFile(
-    path.join(repoRoot, "src", "lab", "index.ts"),
+    path.join(outputRoot, "src", "lab", "index.ts"),
     "export * from \"@mui/lab\";\n",
     "utf8"
   );
 
-  await mkdir(path.join(repoRoot, "src", "icons"), { recursive: true });
+  await mkdir(path.join(outputRoot, "src", "icons"), { recursive: true });
   await writeFile(
-    path.join(repoRoot, "src", "icons", "index.ts"),
+    path.join(outputRoot, "src", "icons", "index.ts"),
     "export * from \"@mui/icons-material\";\n",
     "utf8"
   );
@@ -335,7 +338,7 @@ async function main(): Promise<void> {
   for (const group of chunk(passthroughValueExports, 24)) {
     indexLines.push(`export { ${group.join(", ")} } from \"@mui/material\";`);
   }
-  await writeFile(path.join(repoRoot, "src", "index.ts"), `${indexLines.join("\n")}\n`, "utf8");
+  await writeFile(path.join(outputRoot, "src", "index.ts"), `${indexLines.join("\n")}\n`, "utf8");
 
   console.log(`Generated ${entries.length} material compatibility entry points.`);
 }

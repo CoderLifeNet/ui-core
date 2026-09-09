@@ -20,12 +20,6 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm check:generated
-      - run: pnpm check:exports
-      - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm build
+      - run: pnpm install --ignore-workspace --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm check:visual
-      - run: pnpm check:bundle
+      - run: pnpm check:acceptance
