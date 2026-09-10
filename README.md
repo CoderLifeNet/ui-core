@@ -4,16 +4,16 @@
 
 ## Baseline
 
-- React: `18.3.1`
-- React DOM: `18.3.1`
-- TypeScript: `5.6.3`
-- Material UI: `6.1.7`
-- Styling engine: `@emotion/react 11.13.3`, `@emotion/styled 11.13.0`
+- React: `19.2.8`
+- React DOM: `19.2.8`
+- TypeScript: `7.0.2`
+- Material UI: `9.4.0`
+- Styling engine: `@emotion/react 11.14.0`, `@emotion/styled 11.14.1`
 
 ## Installation
 
 ```bash
-pnpm add @coderlife/ui-core @mui/material @emotion/react @emotion/styled react react-dom
+pnpm add @coderlife/ui-core@0.1.0-alpha.2 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
 ```
 
 Optional coverage:
@@ -39,7 +39,7 @@ import Button from "@coderlife/ui-core/Button";
 Optional entry points:
 
 ```ts
-import { LoadingButton } from "@coderlife/ui-core/lab";
+import { Timeline } from "@coderlife/ui-core/lab";
 import { Home } from "@coderlife/ui-core/icons";
 ```
 

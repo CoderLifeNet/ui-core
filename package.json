@@ -2,6 +2,12 @@
   "name": "@coderlife/ui-core",
   "version": "0.1.0-alpha.2",
   "description": "Compatibility facade over Material UI with optional instrumentation runtime.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoderLifeNet/ui-core.git"
+  },
+  "homepage": "https://github.com/CoderLifeNet/ui-core#readme",
+  "bugs": "https://github.com/CoderLifeNet/ui-core/issues",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -732,6 +738,7 @@
   },
   "publishConfig": {
     "access": "public",
+    "tag": "alpha",
     "provenance": true
   }
 }

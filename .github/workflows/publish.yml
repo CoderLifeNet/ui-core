@@ -1,0 +1,77 @@
+name: Prepare or publish alpha
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact main commit approved for this release
+        required: true
+        type: string
+      mode:
+        description: Preparation never publishes; bootstrap requires an environment token
+        type: choice
+        default: prepare
+        options: [prepare, publish-oidc, publish-bootstrap]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-alpha
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.ref == 'refs/heads/main' && inputs.expected_sha == github.sha
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 11.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.3
+      - run: npm install --global npm@11.11.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm check:acceptance
+      - run: node scripts/check-release.mjs --available --dry-run
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: npm-alpha-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    needs: validate
+    if: inputs.mode != 'prepare'
+    runs-on: ubuntu-latest
+    environment: npm-alpha
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.22.3
+          registry-url: https://registry.npmjs.org/
+      - run: npm install --global npm@11.11.1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: npm-alpha-${{ github.sha }}
+          path: artifacts/
+      - run: node scripts/check-release.mjs --verify-only --available
+      - name: Publish the validated tarball under alpha only
+        env:
+          NODE_AUTH_TOKEN: ${{ inputs.mode == 'publish-bootstrap' && secrets.NPM_BOOTSTRAP_TOKEN || '' }}
+          RELEASE_MODE: ${{ inputs.mode }}
+        run: |
+          if [ "$RELEASE_MODE" = publish-bootstrap ]; then test -n "$NODE_AUTH_TOKEN"; fi
+          npm publish artifacts/*.tgz --ignore-scripts --access public --tag alpha --provenance --registry https://registry.npmjs.org/
