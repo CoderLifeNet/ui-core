@@ -5,7 +5,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const manifest = JSON.parse(readFileSync("package.json", "utf8"));
-const repository = manifest.name.replace("@coderlife/", "CoderLifeNet/");
+assert.ok(["@coderlifenet/ui-core", "@coderlifenet/ui-components"].includes(manifest.name), "Only the renamed release identities are authorized");
+const repository = manifest.name.replace("@coderlifenet/", "CoderLifeNet/");
 const filename = `${manifest.name.slice(1).replace("/", "-")}-${manifest.version}.tgz`;
 const tarball = path.resolve("artifacts", filename);
 const bytes = readFileSync(tarball);
@@ -40,7 +41,7 @@ function checkTarget(target) {
 checkTarget(packed.exports);
 checkTarget(packed.types);
 checkTarget(packed.main);
-if (packed.name === "@coderlife/ui-components") assert.equal(packed.peerDependencies["@coderlife/ui-core"], packed.version);
+if (packed.name === "@coderlifenet/ui-components") assert.equal(packed.peerDependencies["@coderlifenet/ui-core"], packed.version);
 
 const sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 const report = {
@@ -68,8 +69,8 @@ if (process.argv.includes("--available")) {
     console.log("No public package visible; this does not prove scope access or name availability for this identity.");
   }
 }
-if (process.argv.includes("--require-core") && packed.name === "@coderlife/ui-components") {
-  const response = await fetch(`https://registry.npmjs.org/@coderlife%2fui-core/${packed.version}`);
+if (process.argv.includes("--require-core") && packed.name === "@coderlifenet/ui-components") {
+  const response = await fetch(`https://registry.npmjs.org/@coderlifenet%2fui-core/${packed.version}`);
   assert.equal(response.status, 200, "Publish the exact core alpha first");
   const core = await response.json();
   assert.equal(core.version, packed.version);

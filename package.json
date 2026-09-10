@@ -1,5 +1,5 @@
 {
-  "name": "@coderlife/ui-core",
+  "name": "@coderlifenet/ui-core",
   "version": "0.1.0-alpha.2",
   "description": "Compatibility facade over Material UI with optional instrumentation runtime.",
   "repository": {

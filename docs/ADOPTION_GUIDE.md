@@ -11,13 +11,13 @@ import { Button } from "@mui/material";
 With:
 
 ```ts
-import { Button } from "@coderlife/ui-core";
+import { Button } from "@coderlifenet/ui-core";
 ```
 
 Or per-component:
 
 ```ts
-import Button from "@coderlife/ui-core/Button";
+import Button from "@coderlifenet/ui-core/Button";
 ```
 
 ## Step 2: Keep Existing Theme Setup

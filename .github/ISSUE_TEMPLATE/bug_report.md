@@ -13,6 +13,6 @@ assignees: ""
 ## Expected behavior
 
 ## Environment
-- @coderlife/ui-core version:
+- @coderlifenet/ui-core version:
 - React version:
 - @mui/material version:

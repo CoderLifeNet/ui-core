@@ -1,6 +1,6 @@
-# @coderlife/ui-core
+# @coderlifenet/ui-core
 
-`@coderlife/ui-core` is a compatibility facade over Material UI with deterministic export generation plus an opt-in extension runtime for instrumentation.
+`@coderlifenet/ui-core` is a compatibility facade over Material UI with deterministic export generation plus an opt-in extension runtime for instrumentation.
 
 ## Baseline
 
@@ -13,7 +13,7 @@
 ## Installation
 
 ```bash
-pnpm add @coderlife/ui-core@0.1.0-alpha.2 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
+pnpm add @coderlifenet/ui-core@0.1.0-alpha.2 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
 ```
 
 Optional coverage:
@@ -27,29 +27,29 @@ pnpm add @mui/lab @mui/icons-material
 Root import parity:
 
 ```ts
-import { Button, TextField } from "@coderlife/ui-core";
+import { Button, TextField } from "@coderlifenet/ui-core";
 ```
 
 Per-component parity:
 
 ```ts
-import Button from "@coderlife/ui-core/Button";
+import Button from "@coderlifenet/ui-core/Button";
 ```
 
 Optional entry points:
 
 ```ts
-import { Timeline } from "@coderlife/ui-core/lab";
-import { Home } from "@coderlife/ui-core/icons";
+import { Timeline } from "@coderlifenet/ui-core/lab";
+import { Home } from "@coderlifenet/ui-core/icons";
 ```
 
 ## Extensions Runtime
 
 ```tsx
-import { UIExtensionsProvider, TrackingBoundary, useUIExtensions } from "@coderlife/ui-core/extensions";
-import { createAnalyticsRuntime } from "@coderlife/ui-core/analytics";
-import { createMemoryAdapter } from "@coderlife/ui-core/analytics";
-import { createAnalyticsExtension } from "@coderlife/ui-core/extensions";
+import { UIExtensionsProvider, TrackingBoundary, useUIExtensions } from "@coderlifenet/ui-core/extensions";
+import { createAnalyticsRuntime } from "@coderlifenet/ui-core/analytics";
+import { createMemoryAdapter } from "@coderlifenet/ui-core/analytics";
+import { createAnalyticsExtension } from "@coderlifenet/ui-core/extensions";
 
 const memory = createMemoryAdapter();
 const analyticsRuntime = createAnalyticsRuntime([memory], {

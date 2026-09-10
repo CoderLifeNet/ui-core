@@ -15,12 +15,16 @@ Alpha.2 bounded closeout for compatibility facade, instrumentation runtime, visu
 - bundle regression gate
 - local pack identity
 
-## Previous Browser-Verified Artifact Identity
+## Superseded Pre-Rename Artifact Identity
+
+The hashes below describe historical pre-rename packages, not the current scope.
+They are not publication candidates. See RELEASING.md and the final prepare run
+for new-name artifact identity; the prior release approval is superseded.
 
 These hashes identify the earlier alpha.2 browser pass, not a pack of the new CI
 scripts. CI packs the current source and downstream verification records those bytes.
 
-- ui-core/artifacts/coderlife-ui-core-0.1.0-alpha.2.tgz
+- Historical core tarball (pre-rename, archival only)
 - sha256: 102f9039bf69a2bae80c3f372f1af2da5158906ef64a138004d9e84dc49c7e18
 - sha512-base64: MRLWoJcWEgqIeYmDJk2AESEJjsoWhwk/qZpaxa2DoEUJr9TrAiaBk9IxK7TpleMFGzZ6goeK1c6VdD2V2Po54A==
 

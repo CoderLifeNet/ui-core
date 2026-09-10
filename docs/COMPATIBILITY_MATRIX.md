@@ -15,8 +15,8 @@ Optional:
 
 | Package | Version | Notes |
 | --- | --- | --- |
-| @mui/lab | 9.0.0-beta.9 | Exposed via `@coderlife/ui-core/lab` |
-| @mui/icons-material | 9.4.0 | Exposed via `@coderlife/ui-core/icons` |
+| @mui/lab | 9.0.0-beta.9 | Exposed via `@coderlifenet/ui-core/lab` |
+| @mui/icons-material | 9.4.0 | Exposed via `@coderlifenet/ui-core/icons` |
 
 Out of parity scope:
 

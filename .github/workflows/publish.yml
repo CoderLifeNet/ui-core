@@ -42,7 +42,9 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: npm-alpha-${{ github.sha }}
-          path: artifacts/
+          path: |
+            artifacts/coderlifenet-ui-core-0.1.0-alpha.2.tgz
+            artifacts/release.json
           if-no-files-found: error
           retention-days: 30
 
@@ -74,4 +76,4 @@ jobs:
           RELEASE_MODE: ${{ inputs.mode }}
         run: |
           if [ "$RELEASE_MODE" = publish-bootstrap ]; then test -n "$NODE_AUTH_TOKEN"; fi
-          npm publish artifacts/*.tgz --ignore-scripts --access public --tag alpha --provenance --registry https://registry.npmjs.org/
+          npm publish artifacts/coderlifenet-ui-core-0.1.0-alpha.2.tgz --ignore-scripts --access public --tag alpha --provenance --registry https://registry.npmjs.org/

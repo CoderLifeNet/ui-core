@@ -29,7 +29,7 @@ import MuiCheckbox from "@mui/material/Checkbox";
 import MuiFormControlLabel from "@mui/material/FormControlLabel";
 import MuiAutocomplete from "@mui/material/Autocomplete";
 import MuiTextField from "@mui/material/TextField";
-import { Button as CoreButton, Checkbox as CoreCheckbox, Autocomplete as CoreAutocomplete } from "@coderlife/ui-core";
+import { Button as CoreButton, Checkbox as CoreCheckbox, Autocomplete as CoreAutocomplete } from "@coderlifenet/ui-core";
 
 const search = new URLSearchParams(window.location.search);
 const source = search.get("source") || "upstream";

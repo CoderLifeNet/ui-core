@@ -201,6 +201,9 @@ function classify(subpath: string, dtsSource: string, hasDefaultExport: boolean)
 
 async function main(): Promise<void> {
   const pkgRaw = await readFile(path.join(repoRoot, "package.json"), "utf8");
+  if (JSON.parse(pkgRaw).name !== "@coderlifenet/ui-core") {
+    throw new Error("Expected @coderlifenet/ui-core package identity before generation");
+  }
   const pkg = JSON.parse(pkgRaw) as Record<string, unknown>;
 
   const muiPkgRaw = await readFile(muiPkgPath, "utf8");

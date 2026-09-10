@@ -1,24 +1,22 @@
 # Public alpha release
 
-Proposed first publication: `@coderlife/ui-core@0.1.0-alpha.2`, public, dist-tag
+Proposed first publication: `@coderlifenet/ui-core@0.1.0-alpha.2`, public, dist-tag
 `alpha` only. No packages are published by pushes, tags, CI, or prepare mode.
 
 ## Access prerequisite
 
-On 2026-09-10 the configured registry was https://registry.npmjs.org/ and
-`npm whoami` returned ENEEDAUTH. Anonymous package lookup returned 404, so no
-public versions or dist-tags were visible. This is not proof of scope ownership,
-permission, or availability of a potentially private package.
+On 2026-09-10, npm registry https://registry.npmjs.org/ authenticated `chrishacia`.
+`npm org ls coderlifenet chrishacia --json` confirmed the `owner` role, which grants
+package creation and publication rights. Authenticated lookups of both renamed
+packages and their 0.1.0-alpha.2 versions returned 404, with no visible versions or
+dist-tags. Ownership is established by the membership response, not by those 404s.
+Recheck identity, membership and version availability immediately before approval.
+Local npm login does not authenticate GitHub Actions. Never put credentials in chat.
 
-Run `npm login --registry=https://registry.npmjs.org/` in your own terminal and
-complete browser/2FA authentication there. Never put credentials into chat.
-Run `npm whoami` and `npm org ls coderlife <npm-username> --json`. An npm owner
-must confirm this identity can create packages in the scope. If the scope is a
-user namespace rather than an organization, the authenticated username must be
-`coderlife`. For existing packages, also check
-`npm access list collaborators @coderlife/ui-core --json` and registry versions.
-GitHub membership does not grant npm rights. Resolve any missing npm invitation,
-organization package-creation permission, or package write access before approval.
+All previous approval records and tarballs from before the scope rename are
+superseded and must not be published. New-name artifacts and source/hash reports
+from the final prepare-only workflows are the only release candidates. The old
+external artifact directory remains archival only; the history backup is unchanged.
 
 ## Validation and artifact identity
 
@@ -51,12 +49,25 @@ No npm token is supplied in this mode. The public repository URL matches provena
 Trusted-publisher configuration is attached to an existing npm package. For a
 first package without accessible settings, use `publish-bootstrap` once: an npm
 scope-authorized maintainer creates a short-lived granular token with package/scope
-read-write access limited to `@coderlife` and bypass 2FA for CI publishing. Organization
+read-write access limited to `@coderlifenet` and bypass 2FA for CI publishing. Organization
 management access alone does not grant package publishing. Enter it directly into
 the GitHub `npm-alpha` environment secret `NPM_BOOTSTRAP_TOKEN`, never into chat.
 The bootstrap job still uses GitHub OIDC for provenance. After first publication,
 configure the trusted publisher, delete the environment token and revoke it in npm.
 Do not publish a placeholder package to establish trust.
+
+Official npm guidance rechecked on 2026-09-10 still explicitly supports granular
+tokens with bypass 2FA for direct publication. This does not bypass interactive
+2FA for account-identity/governance actions (changed August 2026) or staged-package
+approval. In npm account Access Tokens, choose a short expiration, Packages and
+scopes: Read and write, only `@coderlifenet`, and Bypass two-factor authentication.
+Organization-management permissions are not needed. Store the token directly in
+each repository's Settings > Environments > npm-alpha > NPM_BOOTSTRAP_TOKEN.
+Neither environment had this secret at verification. Enable account 2FA and complete
+any account-management challenges directly on npm. If npm does not offer these
+documented settings for this account, stop and resolve with npm; do not weaken gates.
+The prepared workflow performs direct publication, not staged publication. New
+trusted publishers must explicitly allow `npm publish`, not only `npm stage publish`.
 
 ## Manual release and smoke checks
 
@@ -73,8 +84,8 @@ publish job downloads that same artifact, verifies its source and hashes, checks
 version availability again, and publishes only with `--access public --tag alpha
 --provenance`. Never dispatch publication as part of preparation.
 
-Then verify `npm view @coderlife/ui-core@0.1.0-alpha.2 version dist.integrity
-dist.attestations repository --json` and `npm view @coderlife/ui-core dist-tags
+Then verify `npm view @coderlifenet/ui-core@0.1.0-alpha.2 version dist.integrity
+dist.attestations repository --json` and `npm view @coderlifenet/ui-core dist-tags
 --json`. Compare integrity to the approved run's report; alpha must point at
 0.1.0-alpha.2 and latest must remain absent/unchanged. Only then release components.
 Follow the components registry consumer checks after both packages are public.

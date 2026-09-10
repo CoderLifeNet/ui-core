@@ -14,11 +14,11 @@ const tmpBase = mkdtempSync(path.join(repoRoot, ".tmp-ui-core-bundle-"));
 const scenarios = [
   {
     name: "root-button",
-    importCode: 'import { Button } from "@coderlife/ui-core";'
+    importCode: 'import { Button } from "@coderlifenet/ui-core";'
   },
   {
     name: "subpath-button",
-    importCode: 'import Button from "@coderlife/ui-core/Button";'
+    importCode: 'import Button from "@coderlifenet/ui-core/Button";'
   },
   {
     name: "upstream-button",
