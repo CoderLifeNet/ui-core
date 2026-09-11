@@ -3,6 +3,11 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { publishTarball } from "./publish-tarball.mjs";
+
+const publish = process.argv.includes("--publish");
+const dryRun = process.argv.includes("--dry-run");
+assert.ok(!(publish && dryRun), "Choose publication or dry-run, not both");
 
 const manifest = JSON.parse(readFileSync("package.json", "utf8"));
 assert.ok(["@coderlifenet/ui-core", "@coderlifenet/ui-components"].includes(manifest.name), "Only the renamed release identities are authorized");
@@ -53,13 +58,13 @@ const report = {
   integrity: `sha512-${createHash("sha512").update(bytes).digest("base64")}`,
   files: entries.length
 };
-if (process.argv.includes("--verify-only")) {
+if (publish || process.argv.includes("--verify-only")) {
   const expected = JSON.parse(readFileSync("artifacts/release.json", "utf8"));
   assert.deepEqual(report, expected, "Artifact identity does not match validated source and bytes");
 } else {
   writeFileSync("artifacts/release.json", `${JSON.stringify(report, null, 2)}\n`);
 }
-if (process.argv.includes("--available")) {
+if (publish || process.argv.includes("--available")) {
   const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(packed.name)}`);
   if (response.status === 200) {
     const metadata = await response.json();
@@ -69,14 +74,14 @@ if (process.argv.includes("--available")) {
     console.log("No public package visible; this does not prove scope access or name availability for this identity.");
   }
 }
-if (process.argv.includes("--require-core") && packed.name === "@coderlifenet/ui-components") {
+if ((publish || process.argv.includes("--require-core")) && packed.name === "@coderlifenet/ui-components") {
   const response = await fetch(`https://registry.npmjs.org/@coderlifenet%2fui-core/${packed.version}`);
   assert.equal(response.status, 200, "Publish the exact core alpha first");
   const core = await response.json();
   assert.equal(core.version, packed.version);
   assert.equal(core.repository.url, "git+https://github.com/CoderLifeNet/ui-core.git");
 }
-if (process.argv.includes("--dry-run")) {
-  execFileSync("npm", ["publish", tarball, "--dry-run", "--ignore-scripts", "--access", "public", "--tag", "alpha", "--provenance=false", "--registry", "https://registry.npmjs.org/"], { stdio: "inherit" });
+if (publish || dryRun) {
+  publishTarball(tarball, { dryRun });
 }
 console.log(JSON.stringify(report, null, 2));

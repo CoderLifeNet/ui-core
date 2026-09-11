@@ -76,4 +76,4 @@ jobs:
           RELEASE_MODE: ${{ inputs.mode }}
         run: |
           if [ "$RELEASE_MODE" = publish-bootstrap ]; then test -n "$NODE_AUTH_TOKEN"; fi
-          npm publish artifacts/coderlifenet-ui-core-0.1.0-alpha.2.tgz --ignore-scripts --access public --tag alpha --provenance --registry https://registry.npmjs.org/
+          node scripts/check-release.mjs --publish

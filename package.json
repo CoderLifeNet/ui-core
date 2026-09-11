@@ -20,7 +20,7 @@
     "check:exports": "tsx scripts/check-exports.ts",
     "check:visual": "node scripts/check-visual-regression.mjs",
     "check:bundle": "node scripts/check-button-bundle.mjs",
-    "check:acceptance": "pnpm check:generated && pnpm test:generated && pnpm typecheck && pnpm test && pnpm build && pnpm check:exports && pnpm check:visual && pnpm check:bundle && pnpm pack:local",
+    "check:acceptance": "node --test scripts/test-publish-tarball.mjs && pnpm check:generated && pnpm test:generated && pnpm typecheck && pnpm test && pnpm build && pnpm check:exports && pnpm check:visual && pnpm check:bundle && pnpm pack:local",
     "build": "pnpm generate && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",

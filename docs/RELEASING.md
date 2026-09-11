@@ -20,6 +20,16 @@ external artifact directory remains archival only; the history backup is unchang
 
 ## Validation and artifact identity
 
+Both dry-run and protected publication use `scripts/check-release.mjs` and its
+shared `publish-tarball.mjs` helper. The helper resolves the artifact to an
+absolute path and requires an existing regular `.tgz` file before invoking npm.
+Never pass bare `artifacts/name.tgz` to npm: npm 11 can interpret it as GitHub
+shorthand. `node --test scripts/test-publish-tarball.mjs` checks identical path
+handling and alpha policy for both modes. `--publish` always verifies the recorded
+artifact identity and registry availability; components also requires published
+core. Only dry-run disables provenance. Workflow fixes require fresh source/hash
+records and environment approval; never rerun the failed old workflow revision.
+
 Run `pnpm check:acceptance`, then
 `node scripts/check-release.mjs --available --dry-run` from a clean committed
 checkout. The inspector checks the packed manifest, allowlist, all exports and
@@ -52,8 +62,9 @@ scope-authorized maintainer creates a short-lived granular token with package/sc
 read-write access limited to `@coderlifenet` and bypass 2FA for CI publishing. Organization
 management access alone does not grant package publishing. Enter it directly into
 the GitHub `npm-alpha` environment secret `NPM_BOOTSTRAP_TOKEN`, never into chat.
-The bootstrap job still uses GitHub OIDC for provenance. After first publication,
-configure the trusted publisher, delete the environment token and revoke it in npm.
+The bootstrap job still uses GitHub OIDC for provenance. After BOTH packages publish,
+configure and verify their trusted publishers, delete the environment tokens and
+revoke the bootstrap token in npm.
 Do not publish a placeholder package to establish trust.
 
 Official npm guidance rechecked on 2026-09-10 still explicitly supports granular
