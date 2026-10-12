@@ -12,6 +12,7 @@ assert.ok(!(publish && dryRun), "Choose publication or dry-run, not both");
 const manifest = JSON.parse(readFileSync("package.json", "utf8"));
 assert.ok(["@coderlifenet/ui-core", "@coderlifenet/ui-components"].includes(manifest.name), "Only the renamed release identities are authorized");
 const repository = manifest.name.replace("@coderlifenet/", "CoderLifeNet/");
+const repositoryUrl = `https://github.com/${repository}`;
 const filename = `${manifest.name.slice(1).replace("/", "-")}-${manifest.version}.tgz`;
 const tarball = path.resolve("artifacts", filename);
 const bytes = readFileSync(tarball);
@@ -20,7 +21,7 @@ const entries = execFileSync("tar", ["-tzf", tarball], { encoding: "utf8" }).tri
 assert.equal(packed.name, manifest.name);
 assert.equal(packed.version, manifest.version);
 assert.match(packed.version, /^\d+\.\d+\.\d+-alpha\.\d+$/);
-assert.equal(packed.repository.url, `git+https://github.com/${repository}.git`);
+assert.equal(packed.repository.url, repositoryUrl);
 assert.equal(packed.license, "MIT");
 assert.equal(packed.publishConfig.access, "public");
 assert.equal(packed.publishConfig.tag, "alpha");
@@ -79,7 +80,7 @@ if ((publish || process.argv.includes("--require-core")) && packed.name === "@co
   assert.equal(response.status, 200, "Publish the exact core alpha first");
   const core = await response.json();
   assert.equal(core.version, packed.version);
-  assert.equal(core.repository.url, "git+https://github.com/CoderLifeNet/ui-core.git");
+  assert.equal(core.repository.url, "https://github.com/CoderLifeNet/ui-core");
 }
 if (publish || dryRun) {
   publishTarball(tarball, { dryRun });
