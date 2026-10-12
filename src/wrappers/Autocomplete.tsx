@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type AutocompleteRef = ComponentPropsWithRef<typeof MuiAutocomplete>["ref"];
 
@@ -45,19 +45,19 @@ function AutocompleteImpl<
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onChange"]>(
+  const resolvedOnChange = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onChange"]>(
     theme,
     "MuiAutocomplete",
     "onChange",
     onChange
   );
-  const resolvedOnFocus = resolveThemeDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onFocus"]>(
+  const resolvedOnFocus = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onFocus"]>(
     theme,
     "MuiAutocomplete",
     "onFocus",
     onFocus
   );
-  const resolvedOnBlur = resolveThemeDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onBlur"]>(
+  const resolvedOnBlur = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onBlur"]>(
     theme,
     "MuiAutocomplete",
     "onBlur",

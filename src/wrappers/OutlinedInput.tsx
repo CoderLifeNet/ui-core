@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type OutlinedInputRef = ComponentPropsWithRef<typeof MuiOutlinedInput>["ref"];
 type OutlinedInputChangeArgs = Parameters<NonNullable<OutlinedInputProps["onChange"]>>;
@@ -19,19 +19,19 @@ function OutlinedInputImpl(inProps: OutlinedInputProps, ref: OutlinedInputRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<OutlinedInputProps["onChange"]>(
+  const resolvedOnChange = useResolvedDefaultHandler<OutlinedInputProps["onChange"]>(
     theme,
     "MuiOutlinedInput",
     "onChange",
     onChange
   );
-  const resolvedOnFocus = resolveThemeDefaultHandler<OutlinedInputProps["onFocus"]>(
+  const resolvedOnFocus = useResolvedDefaultHandler<OutlinedInputProps["onFocus"]>(
     theme,
     "MuiOutlinedInput",
     "onFocus",
     onFocus
   );
-  const resolvedOnBlur = resolveThemeDefaultHandler<OutlinedInputProps["onBlur"]>(theme, "MuiOutlinedInput", "onBlur", onBlur);
+  const resolvedOnBlur = useResolvedDefaultHandler<OutlinedInputProps["onBlur"]>(theme, "MuiOutlinedInput", "onBlur", onBlur);
 
   return (
     <MuiOutlinedInput

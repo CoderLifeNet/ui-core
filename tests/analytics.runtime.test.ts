@@ -227,4 +227,83 @@ describe("createAnalyticsRuntime", () => {
     expect(memory.readContext()).toHaveLength(1);
     expect(memory.readContext()[0]?.trackingPath).toEqual(["app", "toolbar"]);
   });
+
+  it("supports adapter replacement while preserving config and avoiding duplicate delivery", () => {
+    const firstOnEvent = vi.fn();
+    const firstConfigure = vi.fn();
+    const firstDispose = vi.fn();
+    const secondOnEvent = vi.fn();
+    const secondConfigure = vi.fn();
+
+    const first = {
+      id: "custom",
+      kind: "custom" as const,
+      configure: firstConfigure,
+      onEvent: firstOnEvent,
+      dispose: firstDispose
+    };
+    const second = {
+      id: "custom",
+      kind: "custom" as const,
+      configure: secondConfigure,
+      onEvent: secondOnEvent
+    };
+
+    const runtime = createAnalyticsRuntime([first], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "denied" },
+      defaultSampleRate: 1
+    });
+
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+
+    runtime.setAdapters([second, second]);
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+
+    expect(firstOnEvent).toHaveBeenCalledTimes(1);
+    expect(secondOnEvent).toHaveBeenCalledTimes(1);
+    expect(firstDispose).toHaveBeenCalledTimes(1);
+    expect(secondConfigure).toHaveBeenCalledWith({ enabled: true, sampleRate: 1 }, expect.any(Object));
+  });
+
+  it("contains synchronous and asynchronous cleanup failures", async () => {
+    const throwingDispose = {
+      id: "throwing",
+      kind: "custom" as const,
+      onEvent: vi.fn(),
+      dispose: vi.fn(() => {
+        throw new Error("dispose throw");
+      })
+    };
+    const rejectingDispose = {
+      id: "rejecting",
+      kind: "custom" as const,
+      onEvent: vi.fn(),
+      dispose: vi.fn(async () => {
+        throw new Error("dispose reject");
+      })
+    };
+
+    const runtime = createAnalyticsRuntime([throwingDispose, rejectingDispose], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "denied" }
+    });
+
+    expect(() => runtime.setAdapters([])).not.toThrow();
+    expect(() => runtime.dispose()).not.toThrow();
+
+    await Promise.resolve();
+  });
 });

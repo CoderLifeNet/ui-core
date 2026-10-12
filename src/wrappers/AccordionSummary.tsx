@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type AccordionSummaryRef = ComponentPropsWithRef<typeof MuiAccordionSummary>["ref"];
 type AccordionSummaryClickArgs = Parameters<NonNullable<AccordionSummaryProps["onClick"]>>;
@@ -20,7 +20,7 @@ function AccordionSummaryImpl(
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onClick, ...props } = inProps;
-  const resolvedOnClick = resolveThemeDefaultHandler<AccordionSummaryProps["onClick"]>(
+  const resolvedOnClick = useResolvedDefaultHandler<AccordionSummaryProps["onClick"]>(
     theme,
     "MuiAccordionSummary",
     "onClick",
@@ -36,8 +36,8 @@ function AccordionSummaryImpl(
         emit,
         dedupeKey: "click:AccordionSummary",
         eventFactory: () => ({
-          type: "ui.accordion.toggle",
-          action: "toggle",
+          type: "ui.accordion_summary.click",
+          action: "click",
           component: "AccordionSummary"
         })
       })}

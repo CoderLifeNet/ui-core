@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type SwitchRef = ComponentPropsWithRef<typeof MuiSwitch>["ref"];
 type SwitchChangeArgs = Parameters<NonNullable<SwitchProps["onChange"]>>;
@@ -19,9 +19,9 @@ function SwitchImpl(inProps: SwitchProps, ref: SwitchRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<SwitchProps["onChange"]>(theme, "MuiSwitch", "onChange", onChange);
-  const resolvedOnFocus = resolveThemeDefaultHandler<SwitchProps["onFocus"]>(theme, "MuiSwitch", "onFocus", onFocus);
-  const resolvedOnBlur = resolveThemeDefaultHandler<SwitchProps["onBlur"]>(theme, "MuiSwitch", "onBlur", onBlur);
+  const resolvedOnChange = useResolvedDefaultHandler<SwitchProps["onChange"]>(theme, "MuiSwitch", "onChange", onChange);
+  const resolvedOnFocus = useResolvedDefaultHandler<SwitchProps["onFocus"]>(theme, "MuiSwitch", "onFocus", onFocus);
+  const resolvedOnBlur = useResolvedDefaultHandler<SwitchProps["onBlur"]>(theme, "MuiSwitch", "onBlur", onBlur);
 
   return (
     <MuiSwitch

@@ -5,7 +5,8 @@ import type {
   AnalyticsConsent,
   AnalyticsDispatchContext,
   AnalyticsDispatchConfig,
-  AnalyticsRuntime
+  AnalyticsRuntime,
+  AnalyticsSetAdaptersOptions
 } from "./types.js";
 
 const defaultConsent: AnalyticsConsent = {
@@ -38,7 +39,7 @@ function shouldSample(sampleRate: number): boolean {
 }
 
 export function createAnalyticsRuntime(
-  adapters: AnalyticsAdapter[],
+  initialAdapters: AnalyticsAdapter[],
   initialConfig?: Partial<AnalyticsDispatchConfig>
 ): AnalyticsRuntime {
   let config: AnalyticsDispatchConfig = {
@@ -47,6 +48,16 @@ export function createAnalyticsRuntime(
     debug: false,
     ...initialConfig
   };
+
+  const dedupeAdapters = (list: AnalyticsAdapter[]): AnalyticsAdapter[] => {
+    const byId = new Map<string, AnalyticsAdapter>();
+    for (const adapter of list) {
+      byId.set(adapter.id, adapter);
+    }
+    return [...byId.values()];
+  };
+
+  let adapters = dedupeAdapters(initialAdapters);
 
   const buildDispatchContext = (context?: Partial<ExtensionDispatchContext>): AnalyticsDispatchContext => ({
     trackingPath: context?.trackingPath ?? [],
@@ -63,11 +74,22 @@ export function createAnalyticsRuntime(
       try {
         const result = adapter.configure?.({ enabled, sampleRate }, dispatchContext);
         if (result && typeof (result as Promise<void>).catch === "function") {
-          (result as Promise<void>).catch(() => undefined);
+          void (result as Promise<void>).catch(() => undefined);
         }
       } catch {
         // Configure failures must not escape the runtime.
       }
+    }
+  };
+
+  const disposeAdapter = (adapter: AnalyticsAdapter): void => {
+    try {
+      const result = adapter.dispose?.();
+      if (result && typeof (result as Promise<void>).catch === "function") {
+        void (result as Promise<void>).catch(() => undefined);
+      }
+    } catch {
+      // Dispose failures are intentionally swallowed.
     }
   };
 
@@ -117,21 +139,32 @@ export function createAnalyticsRuntime(
         try {
           const result = adapter.onEvent(event, dispatchContext);
           if (result && typeof (result as Promise<void>).catch === "function") {
-            (result as Promise<void>).catch(() => undefined);
+            void (result as Promise<void>).catch(() => undefined);
           }
         } catch {
           // Adapter failures must not escape user interactions.
         }
       }
     },
-    dispose: () => {
-      for (const adapter of adapters) {
-        try {
-          adapter.dispose?.();
-        } catch {
-          // Dispose failures are intentionally swallowed.
+    setAdapters: (next, options: AnalyticsSetAdaptersOptions = {}) => {
+      const nextAdapters = dedupeAdapters(next);
+      if (options.disposeRemoved !== false) {
+        for (const previousAdapter of adapters) {
+          const retained = nextAdapters.find((candidate) => candidate.id === previousAdapter.id);
+          if (!retained || retained !== previousAdapter) {
+            disposeAdapter(previousAdapter);
+          }
         }
       }
+
+      adapters = nextAdapters;
+      applyAdapterConfig();
+    },
+    dispose: () => {
+      for (const adapter of adapters) {
+        disposeAdapter(adapter);
+      }
+      adapters = [];
     }
   };
 }

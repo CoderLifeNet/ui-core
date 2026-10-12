@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type MenuItemRef = ComponentPropsWithRef<typeof MuiMenuItem>["ref"];
 type MenuItemClickArgs = Parameters<NonNullable<MenuItemProps["onClick"]>>;
@@ -17,7 +17,7 @@ function MenuItemImpl(inProps: MenuItemProps, ref: MenuItemRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onClick, ...props } = inProps;
-  const resolvedOnClick = resolveThemeDefaultHandler<MenuItemProps["onClick"]>(theme, "MuiMenuItem", "onClick", onClick);
+  const resolvedOnClick = useResolvedDefaultHandler<MenuItemProps["onClick"]>(theme, "MuiMenuItem", "onClick", onClick);
 
   return (
     <MuiMenuItem

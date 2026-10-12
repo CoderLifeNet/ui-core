@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type InputBaseRef = ComponentPropsWithRef<typeof MuiInputBase>["ref"];
 type InputBaseChangeArgs = Parameters<NonNullable<InputBaseProps["onChange"]>>;
@@ -19,14 +19,14 @@ function InputBaseImpl(inProps: InputBaseProps, ref: InputBaseRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<InputBaseProps["onChange"]>(
+  const resolvedOnChange = useResolvedDefaultHandler<InputBaseProps["onChange"]>(
     theme,
     "MuiInputBase",
     "onChange",
     onChange
   );
-  const resolvedOnFocus = resolveThemeDefaultHandler<InputBaseProps["onFocus"]>(theme, "MuiInputBase", "onFocus", onFocus);
-  const resolvedOnBlur = resolveThemeDefaultHandler<InputBaseProps["onBlur"]>(theme, "MuiInputBase", "onBlur", onBlur);
+  const resolvedOnFocus = useResolvedDefaultHandler<InputBaseProps["onFocus"]>(theme, "MuiInputBase", "onFocus", onFocus);
+  const resolvedOnBlur = useResolvedDefaultHandler<InputBaseProps["onBlur"]>(theme, "MuiInputBase", "onBlur", onBlur);
 
   return (
     <MuiInputBase

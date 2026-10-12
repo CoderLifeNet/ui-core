@@ -24,7 +24,7 @@ const RESERVED_METADATA_KEYS = new Set([
   "optedOut"
 ]);
 
-function sanitizeMetadata(metadata: Record<string, string | number | boolean | null> | undefined) {
+function sanitizeMetadata(metadata: Record<string, unknown> | undefined) {
   if (!metadata) {
     return undefined;
   }
@@ -34,7 +34,9 @@ function sanitizeMetadata(metadata: Record<string, string | number | boolean | n
     if (RESERVED_METADATA_KEYS.has(key)) {
       continue;
     }
-    output[key] = value;
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean" || value === null) {
+      output[key] = value;
+    }
   }
 
   return Object.keys(output).length > 0 ? output : undefined;
@@ -62,16 +64,23 @@ export function useEmitUIEvent(): (input: EmitUIEventInput) => void {
 
     const resolvedSemanticId = input.semanticId ?? tracking.semanticId;
     const mergedMetadata = sanitizeMetadata({
-      ...tracking.metadata,
-      ...(input.metadata ?? {})
+      ...(tracking.metadata ?? {}),
+      ...((input.metadata as Record<string, unknown> | undefined) ?? {})
     });
 
+    const event: EmitUIEventInput = {
+      component: input.component,
+      action: input.action,
+      type: input.type,
+      ...(resolvedSemanticId ? { semanticId: resolvedSemanticId } : {})
+    };
+
+    if (mergedMetadata) {
+      event.metadata = mergedMetadata;
+    }
+
     extensions.emit(
-      {
-        ...input,
-        ...(resolvedSemanticId ? { semanticId: resolvedSemanticId } : {}),
-        ...(mergedMetadata ? { metadata: mergedMetadata } : {})
-      },
+      event,
       { trackingPath: tracking.trackingPath, optedOut: tracking.optedOut }
     );
   };

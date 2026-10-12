@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type RadioRef = ComponentPropsWithRef<typeof MuiRadio>["ref"];
 type RadioChangeArgs = Parameters<NonNullable<RadioProps["onChange"]>>;
@@ -19,9 +19,9 @@ function RadioImpl(inProps: RadioProps, ref: RadioRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<RadioProps["onChange"]>(theme, "MuiRadio", "onChange", onChange);
-  const resolvedOnFocus = resolveThemeDefaultHandler<RadioProps["onFocus"]>(theme, "MuiRadio", "onFocus", onFocus);
-  const resolvedOnBlur = resolveThemeDefaultHandler<RadioProps["onBlur"]>(theme, "MuiRadio", "onBlur", onBlur);
+  const resolvedOnChange = useResolvedDefaultHandler<RadioProps["onChange"]>(theme, "MuiRadio", "onChange", onChange);
+  const resolvedOnFocus = useResolvedDefaultHandler<RadioProps["onFocus"]>(theme, "MuiRadio", "onFocus", onFocus);
+  const resolvedOnBlur = useResolvedDefaultHandler<RadioProps["onBlur"]>(theme, "MuiRadio", "onBlur", onBlur);
 
   return (
     <MuiRadio

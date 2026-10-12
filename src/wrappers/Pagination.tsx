@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type PaginationRef = ComponentPropsWithRef<typeof MuiPagination>["ref"];
 type PaginationChangeArgs = Parameters<NonNullable<PaginationProps["onChange"]>>;
@@ -17,7 +17,7 @@ function PaginationImpl(inProps: PaginationProps, ref: PaginationRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<PaginationProps["onChange"]>(
+  const resolvedOnChange = useResolvedDefaultHandler<PaginationProps["onChange"]>(
     theme,
     "MuiPagination",
     "onChange",

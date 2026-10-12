@@ -3,12 +3,14 @@ import { userEvent } from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { Button } from "../src/material/Button.js";
 import TextField from "../src/material/TextField.js";
+import { createCustomAdapter } from "../src/analytics/adapters/custom.js";
 import { createMemoryAdapter } from "../src/analytics/adapters/memory.js";
 import { createAnalyticsRuntime } from "../src/analytics/runtime.js";
 import { UIExtensionsProvider } from "../src/extensions/runtime.js";
 import { TrackingBoundary } from "../src/extensions/tracking-boundary.js";
 import { createAnalyticsExtension } from "../src/extensions/instrumentation-extension.js";
 import { useEmitUIEvent } from "../src/instrumentation/emit.js";
+import type { UIEvent } from "../src/extensions/types.js";
 
 function OverrideSemanticIdEmitter() {
   const emit = useEmitUIEvent();
@@ -53,6 +55,30 @@ function setupMemoryRuntime() {
     consent: { analyticsStorage: "granted", adStorage: "granted" }
   });
   return { memory, runtime };
+}
+
+function MetadataEmitter({
+  metadata,
+  label = "Emit Metadata"
+}: {
+  metadata: Record<string, unknown>;
+  label?: string;
+}) {
+  const emit = useEmitUIEvent();
+  return (
+    <button
+      onClick={() =>
+        emit({
+          type: "ui.button.click",
+          action: "click",
+          component: "Button",
+          metadata: metadata as unknown as Record<string, string | number | boolean | null>
+        })
+      }
+    >
+      {label}
+    </button>
+  );
 }
 
 describe("TrackingBoundary contract", () => {
@@ -167,5 +193,107 @@ describe("TrackingBoundary contract", () => {
     await user.click(screen.getByRole("button", { name: "Automatic Event" }));
     await user.click(screen.getByRole("button", { name: "Explicit Event" }));
     expect(memory.read()).toHaveLength(0);
+  });
+
+  it("removes reserved-only metadata at the shared emit boundary", async () => {
+    const user = userEvent.setup();
+    const delivered: UIEvent[] = [];
+    const memory = createMemoryAdapter();
+    const custom = createCustomAdapter({
+      id: "custom",
+      onEvent: (event) => {
+        delivered.push(event);
+      }
+    });
+    const runtime = createAnalyticsRuntime([memory, custom], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "granted" }
+    });
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="root">
+          <MetadataEmitter label="Emit Reserved" metadata={{ component: "spoof", timestamp: 123, type: "spoof" }} />
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: "Emit Reserved" }));
+    expect(memory.read()[0]?.metadata).toBeUndefined();
+    expect(delivered[0]?.metadata).toBeUndefined();
+  });
+
+  it("preserves merge precedence while dropping reserved metadata keys", async () => {
+    const user = userEvent.setup();
+    const delivered: UIEvent[] = [];
+    const memory = createMemoryAdapter();
+    const custom = createCustomAdapter({
+      id: "custom",
+      onEvent: (event) => {
+        delivered.push(event);
+      }
+    });
+    const runtime = createAnalyticsRuntime([memory, custom], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "granted" }
+    });
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="root" metadata={{ source: "boundary", context: "scope", trackingPath: "hidden" }}>
+          <MetadataEmitter label="Emit Mixed" metadata={{ source: "event", count: 3, semanticId: "hidden" }} />
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: "Emit Mixed" }));
+    const expectedMetadata = { source: "event", context: "scope", count: 3 };
+    expect(memory.read()[0]?.metadata).toEqual(expectedMetadata);
+    expect(delivered[0]?.metadata).toEqual(expectedMetadata);
+  });
+
+  it("drops invalid runtime metadata values from JavaScript-style emit calls", async () => {
+    const user = userEvent.setup();
+    const delivered: UIEvent[] = [];
+    const memory = createMemoryAdapter();
+    const custom = createCustomAdapter({
+      id: "custom",
+      onEvent: (event) => {
+        delivered.push(event);
+      }
+    });
+    const runtime = createAnalyticsRuntime([memory, custom], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "granted" }
+    });
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="root">
+          <MetadataEmitter
+            label="Emit Invalid"
+            metadata={{
+              validText: "ok",
+              validNumber: 7,
+              validBoolean: true,
+              validNull: null,
+              invalidObject: { nested: true },
+              invalidArray: ["x"],
+              invalidFn: () => "nope"
+            }}
+          />
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: "Emit Invalid" }));
+    const expectedMetadata = {
+      validText: "ok",
+      validNumber: 7,
+      validBoolean: true,
+      validNull: null
+    };
+    expect(memory.read()[0]?.metadata).toEqual(expectedMetadata);
+    expect(delivered[0]?.metadata).toEqual(expectedMetadata);
   });
 });

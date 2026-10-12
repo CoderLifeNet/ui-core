@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type CheckboxRef = ComponentPropsWithRef<typeof MuiCheckbox>["ref"];
 type CheckboxChangeArgs = Parameters<NonNullable<CheckboxProps["onChange"]>>;
@@ -19,14 +19,14 @@ function CheckboxImpl(inProps: CheckboxProps, ref: CheckboxRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<CheckboxProps["onChange"]>(
+  const resolvedOnChange = useResolvedDefaultHandler<CheckboxProps["onChange"]>(
     theme,
     "MuiCheckbox",
     "onChange",
     onChange
   );
-  const resolvedOnFocus = resolveThemeDefaultHandler<CheckboxProps["onFocus"]>(theme, "MuiCheckbox", "onFocus", onFocus);
-  const resolvedOnBlur = resolveThemeDefaultHandler<CheckboxProps["onBlur"]>(theme, "MuiCheckbox", "onBlur", onBlur);
+  const resolvedOnFocus = useResolvedDefaultHandler<CheckboxProps["onFocus"]>(theme, "MuiCheckbox", "onFocus", onFocus);
+  const resolvedOnBlur = useResolvedDefaultHandler<CheckboxProps["onBlur"]>(theme, "MuiCheckbox", "onBlur", onBlur);
 
   return (
     <MuiCheckbox

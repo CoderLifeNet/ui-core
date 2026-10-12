@@ -112,10 +112,20 @@ function FilePicker() {
 
 ## Runnable Candidate Example
 
-The following example uses only public exports and demonstrates one host runtime, app/form/field boundaries, live consent+enablement updates, no-provider safety, explicit file-input events, and tracking inside `@coderlifenet/ui-components` children.
+Executable fixture source of truth: `ui-components/consumers/vite-app/src/App.tsx`
+
+Run it locally from `ui-components`:
+
+```bash
+pnpm check:consumers
+```
+
+The fixture uses only public exports and demonstrates one stable host runtime, app/form/field boundaries, live consent+enablement updates via `runtime.update(...)` in an effect, no-provider safety, explicit file-input events, an in-memory event inspector, and tracking inside `@coderlifenet/ui-components` children.
+
+Lifecycle-safe host pattern:
 
 ```tsx
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -163,22 +173,27 @@ export function AnalyticsDemo() {
   const runtime = useMemo(
     () =>
       createAnalyticsRuntime([memory], {
-        enabled,
+        enabled: true,
         consent: {
-          analyticsStorage: consent ? "granted" : "denied",
+          analyticsStorage: "granted",
           adStorage: "denied"
         }
       }),
-    [enabled, consent, memory]
+    [memory]
   );
 
-  runtime.update({
-    enabled,
-    consent: {
-      analyticsStorage: consent ? "granted" : "denied",
-      adStorage: "denied"
-    }
-  });
+  useEffect(() => {
+    runtime.update({
+      enabled,
+      consent: {
+        analyticsStorage: consent ? "granted" : "denied",
+        adStorage: "denied"
+      }
+    });
+  }, [consent, enabled, runtime]);
+
+  // Optional: replace adapter set without recreating runtime.
+  // runtime.setAdapters([memory, createCustomAdapter(...)])
 
   return (
     <>

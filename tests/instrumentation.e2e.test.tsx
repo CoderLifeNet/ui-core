@@ -344,6 +344,40 @@ describe("instrumentation runtime e2e", () => {
     expect(types).toContain("ui.autocomplete.blur");
   });
 
+  it("emits distinct Autocomplete and wrapped TextField focus/blur events when both are selected", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary
+          id="autocomplete-focus-scope"
+          events={[
+            "ui.autocomplete.focus",
+            "ui.autocomplete.blur",
+            "ui.text_field.focus",
+            "ui.text_field.blur"
+          ]}
+        >
+          <Autocomplete
+            options={["Alpha", "Beta"]}
+            renderInput={(params) => <TextField {...params} label="Autocomplete Ownership" />}
+          />
+          <Button>After Focus</Button>
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Autocomplete Ownership" }));
+    await user.click(screen.getByRole("button", { name: "After Focus" }));
+
+    const types = memory.read().map((entry) => entry.type);
+    expect(types).toContain("ui.autocomplete.focus");
+    expect(types).toContain("ui.autocomplete.blur");
+    expect(types).toContain("ui.text_field.focus");
+    expect(types).toContain("ui.text_field.blur");
+  });
+
   it("preserves inputRef and accessible helper-text wiring", () => {
     const inputRef = vi.fn();
 

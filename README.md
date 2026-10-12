@@ -70,6 +70,8 @@ memory.configure?.({ enabled: true, sampleRate: 1 });
 </UIExtensionsProvider>;
 ```
 
+Keep a single runtime instance and apply state changes with `analyticsRuntime.update(...)` in an effect, not during render. To replace integrations without rebuilding host wiring, use `analyticsRuntime.setAdapters(nextAdapters)`; existing dispatch config is preserved and removed adapters are disposed safely by default.
+
 `TrackingBoundary` supports:
 
 - `id`: required tracking path segment.

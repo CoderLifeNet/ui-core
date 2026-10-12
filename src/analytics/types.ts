@@ -33,11 +33,16 @@ export interface AnalyticsAdapter {
   kind: "ga4" | "adobe" | "meta-pixel" | "custom" | "memory";
   configure?: (config: AnalyticsAdapterConfig, context?: AnalyticsDispatchContext) => void | Promise<void>;
   onEvent: (event: UIEvent, context?: AnalyticsDispatchContext) => void | Promise<void>;
-  dispose?: () => void;
+  dispose?: () => void | Promise<void>;
+}
+
+export interface AnalyticsSetAdaptersOptions {
+  disposeRemoved?: boolean;
 }
 
 export interface AnalyticsRuntime {
   update: (next: Partial<AnalyticsDispatchConfig>) => void;
   dispatch: (event: UIEvent, context?: Partial<ExtensionDispatchContext>) => void;
+  setAdapters: (next: AnalyticsAdapter[], options?: AnalyticsSetAdaptersOptions) => void;
   dispose: () => void;
 }

@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type LinkRef = ComponentPropsWithRef<typeof MuiLink>["ref"];
 type LinkClickArgs = Parameters<NonNullable<LinkProps["onClick"]>>;
@@ -17,7 +17,7 @@ function LinkImpl(inProps: LinkProps, ref: LinkRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onClick, ...props } = inProps;
-  const resolvedOnClick = resolveThemeDefaultHandler<LinkProps["onClick"]>(theme, "MuiLink", "onClick", onClick);
+  const resolvedOnClick = useResolvedDefaultHandler<LinkProps["onClick"]>(theme, "MuiLink", "onClick", onClick);
 
   return (
     <MuiLink

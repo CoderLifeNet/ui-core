@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type TabsRef = ComponentPropsWithRef<typeof MuiTabs>["ref"];
 type TabsChangeArgs = Parameters<NonNullable<TabsProps["onChange"]>>;
@@ -17,7 +17,7 @@ function TabsImpl(inProps: TabsProps, ref: TabsRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onChange, ...props } = inProps;
-  const resolvedOnChange = resolveThemeDefaultHandler<TabsProps["onChange"]>(theme, "MuiTabs", "onChange", onChange);
+  const resolvedOnChange = useResolvedDefaultHandler<TabsProps["onChange"]>(theme, "MuiTabs", "onChange", onChange);
 
   return (
     <MuiTabs

@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { preserveComponentType } from "./preserve-component-type.js";
-import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
+import { useResolvedDefaultHandler, useResolvedDefaultProp } from "./resolve-theme-default-handler.js";
 
 type ButtonRef = ComponentPropsWithRef<typeof MuiButton>["ref"];
 type ButtonClickArgs = Parameters<NonNullable<ButtonProps["onClick"]>>;
@@ -17,7 +17,9 @@ function ButtonImpl(inProps: ButtonProps, ref: ButtonRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onClick, ...props } = inProps;
-  const resolvedOnClick = resolveThemeDefaultHandler<ButtonProps["onClick"]>(theme, "MuiButton", "onClick", onClick);
+  const resolvedOnClick = useResolvedDefaultHandler<ButtonProps["onClick"]>(theme, "MuiButton", "onClick", onClick);
+  const resolvedVariant = useResolvedDefaultProp<ButtonProps["variant"]>(theme, "MuiButton", "variant", inProps.variant);
+  const resolvedColor = useResolvedDefaultProp<ButtonProps["color"]>(theme, "MuiButton", "color", inProps.color);
 
   return (
     <MuiButton
@@ -32,8 +34,8 @@ function ButtonImpl(inProps: ButtonProps, ref: ButtonRef) {
           action: "click",
           component: "Button",
           metadata: {
-            variant: inProps.variant ?? "text",
-            color: inProps.color ?? "primary"
+            variant: resolvedVariant ?? "text",
+            color: resolvedColor ?? "primary"
           }
         })
       })}
