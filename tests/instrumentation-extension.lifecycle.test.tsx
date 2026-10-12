@@ -16,6 +16,7 @@ describe("createAnalyticsExtension lifecycle", () => {
     const runtime: AnalyticsRuntime = {
       update: vi.fn(),
       dispatch: vi.fn(),
+      setAdapters: vi.fn(),
       dispose: vi.fn()
     };
 
@@ -35,6 +36,7 @@ describe("createAnalyticsExtension lifecycle", () => {
     const runtime: AnalyticsRuntime = {
       update: vi.fn(),
       dispatch: vi.fn(),
+      setAdapters: vi.fn(),
       dispose: vi.fn()
     };
 
@@ -55,11 +57,13 @@ describe("createAnalyticsExtension lifecycle", () => {
     const firstRuntime: AnalyticsRuntime = {
       update: vi.fn(),
       dispatch: vi.fn(),
+      setAdapters: vi.fn(),
       dispose: vi.fn()
     };
     const secondRuntime: AnalyticsRuntime = {
       update: vi.fn(),
       dispatch: vi.fn(),
+      setAdapters: vi.fn(),
       dispose: vi.fn()
     };
 
