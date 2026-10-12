@@ -58,12 +58,65 @@ export function createAnalyticsRuntime(
   };
 
   let adapters = dedupeAdapters(initialAdapters);
+  let pendingConfigureCount = 0;
+  const queuedDispatches: Array<{ event: Parameters<AnalyticsRuntime["dispatch"]>[0]; context?: Partial<ExtensionDispatchContext> }> = [];
 
   const buildDispatchContext = (context?: Partial<ExtensionDispatchContext>): AnalyticsDispatchContext => ({
     trackingPath: context?.trackingPath ?? [],
     optedOut: context?.optedOut ?? false,
     consent: config.consent
   });
+
+  const deliverEvent = (event: Parameters<AnalyticsRuntime["dispatch"]>[0], context?: Partial<ExtensionDispatchContext>): void => {
+    const dispatchContext = buildDispatchContext(context);
+
+    if (dispatchContext.optedOut) {
+      return;
+    }
+    if (!config.enabled) {
+      return;
+    }
+    if (config.consent.analyticsStorage !== "granted") {
+      return;
+    }
+    if (!passesAllowlist(event.component, config.componentAllowlist)) {
+      return;
+    }
+    if (!passesAllowlist(event.type, config.eventAllowlist)) {
+      return;
+    }
+    for (const adapter of adapters) {
+      const adapterEnabled = config.adapterEnabled?.[adapter.id] ?? config.enabled;
+      if (!adapterEnabled) {
+        continue;
+      }
+      if (adapter.kind === "meta-pixel" && config.consent.adStorage !== "granted") {
+        continue;
+      }
+      if (!shouldSample(clampSampleRate(config.adapterSampleRate?.[adapter.id] ?? config.defaultSampleRate ?? 1))) {
+        continue;
+      }
+      try {
+        const result = adapter.onEvent(event, dispatchContext);
+        if (result && typeof (result as Promise<void>).catch === "function") {
+          void (result as Promise<void>).catch(() => undefined);
+        }
+      } catch {
+        // Adapter failures must not escape user interactions.
+      }
+    }
+  };
+
+  const flushQueuedDispatchesIfReady = (): void => {
+    if (pendingConfigureCount > 0 || queuedDispatches.length === 0) {
+      return;
+    }
+
+    const pending = queuedDispatches.splice(0, queuedDispatches.length);
+    for (const queued of pending) {
+      deliverEvent(queued.event, queued.context);
+    }
+  };
 
   const applyAdapterConfig = (): void => {
     const dispatchContext = buildDispatchContext();
@@ -74,12 +127,20 @@ export function createAnalyticsRuntime(
       try {
         const result = adapter.configure?.({ enabled, sampleRate }, dispatchContext);
         if (result && typeof (result as Promise<void>).catch === "function") {
-          void (result as Promise<void>).catch(() => undefined);
+          pendingConfigureCount += 1;
+          void (result as Promise<void>)
+            .catch(() => undefined)
+            .finally(() => {
+              pendingConfigureCount = Math.max(0, pendingConfigureCount - 1);
+              flushQueuedDispatchesIfReady();
+            });
         }
       } catch {
         // Configure failures must not escape the runtime.
       }
     }
+
+    flushQueuedDispatchesIfReady();
   };
 
   const disposeAdapter = (adapter: AnalyticsAdapter): void => {
@@ -108,43 +169,12 @@ export function createAnalyticsRuntime(
       applyAdapterConfig();
     },
     dispatch: (event, context) => {
-      const dispatchContext = buildDispatchContext(context);
+      if (pendingConfigureCount > 0) {
+        queuedDispatches.push(context ? { event, context } : { event });
+        return;
+      }
 
-      if (dispatchContext.optedOut) {
-        return;
-      }
-      if (!config.enabled) {
-        return;
-      }
-      if (config.consent.analyticsStorage !== "granted") {
-        return;
-      }
-      if (!passesAllowlist(event.component, config.componentAllowlist)) {
-        return;
-      }
-      if (!passesAllowlist(event.type, config.eventAllowlist)) {
-        return;
-      }
-      for (const adapter of adapters) {
-        const adapterEnabled = config.adapterEnabled?.[adapter.id] ?? config.enabled;
-        if (!adapterEnabled) {
-          continue;
-        }
-        if (adapter.kind === "meta-pixel" && config.consent.adStorage !== "granted") {
-          continue;
-        }
-        if (!shouldSample(clampSampleRate(config.adapterSampleRate?.[adapter.id] ?? config.defaultSampleRate ?? 1))) {
-          continue;
-        }
-        try {
-          const result = adapter.onEvent(event, dispatchContext);
-          if (result && typeof (result as Promise<void>).catch === "function") {
-            void (result as Promise<void>).catch(() => undefined);
-          }
-        } catch {
-          // Adapter failures must not escape user interactions.
-        }
-      }
+      deliverEvent(event, context);
     },
     setAdapters: (next, options: AnalyticsSetAdaptersOptions = {}) => {
       const nextAdapters = dedupeAdapters(next);

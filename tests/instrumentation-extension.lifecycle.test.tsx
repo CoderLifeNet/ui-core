@@ -32,7 +32,7 @@ describe("createAnalyticsExtension lifecycle", () => {
     expect(runtime.dispose).not.toHaveBeenCalled();
   });
 
-  it("supports opt-in runtime disposal", () => {
+  it("supports opt-in runtime disposal", async () => {
     const runtime: AnalyticsRuntime = {
       update: vi.fn(),
       dispatch: vi.fn(),
@@ -50,6 +50,41 @@ describe("createAnalyticsExtension lifecycle", () => {
     );
 
     unmount();
+    await Promise.resolve();
+    expect(runtime.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not dispose shared runtime during extension replacement", async () => {
+    const runtime: AnalyticsRuntime = {
+      update: vi.fn(),
+      dispatch: vi.fn(),
+      setAdapters: vi.fn(),
+      dispose: vi.fn()
+    };
+
+    const { rerender, unmount } = render(
+      <UIExtensionsProvider
+        initialConfig={{ enabled: true }}
+        extensions={[createAnalyticsExtension(runtime, { disposeRuntimeOnCleanup: true })]}
+      >
+        <div />
+      </UIExtensionsProvider>
+    );
+
+    rerender(
+      <UIExtensionsProvider
+        initialConfig={{ enabled: true }}
+        extensions={[createAnalyticsExtension(runtime, { disposeRuntimeOnCleanup: true })]}
+      >
+        <div />
+      </UIExtensionsProvider>
+    );
+
+    await Promise.resolve();
+    expect(runtime.dispose).not.toHaveBeenCalled();
+
+    unmount();
+    await Promise.resolve();
     expect(runtime.dispose).toHaveBeenCalledTimes(1);
   });
 

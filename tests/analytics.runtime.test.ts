@@ -205,6 +205,41 @@ describe("createAnalyticsRuntime", () => {
     ).not.toThrow();
   });
 
+  it("queues dispatch until async configure settles", async () => {
+    let resolveConfigure: (() => void) | undefined;
+    const configurePromise = new Promise<void>((resolve) => {
+      resolveConfigure = resolve;
+    });
+
+    const adapter = {
+      id: "custom",
+      kind: "custom" as const,
+      configure: vi.fn(() => configurePromise),
+      onEvent: vi.fn()
+    };
+
+    const runtime = createAnalyticsRuntime([adapter], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "denied" }
+    });
+
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+
+    expect(adapter.onEvent).not.toHaveBeenCalled();
+
+    resolveConfigure?.();
+    await configurePromise;
+    await Promise.resolve();
+
+    expect(adapter.onEvent).toHaveBeenCalledTimes(1);
+  });
+
   it("propagates tracking context into memory adapter inspection API", () => {
     const memory = createMemoryAdapter();
     const runtime = createAnalyticsRuntime([memory], {

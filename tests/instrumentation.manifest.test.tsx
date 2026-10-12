@@ -26,6 +26,8 @@ describe("instrumentation manifest", () => {
   it("lists known event types and validates unsupported values", () => {
     expect(knownUIEventTypes.includes("ui.button.click")).toBe(true);
     expect(isKnownUIEventType("ui.input.blur")).toBe(true);
+    expect(isKnownUIEventType("toString")).toBe(false);
+    expect(isKnownUIEventType("__proto__")).toBe(false);
 
     const unsupported = getUnsupportedEventTypes(["ui.button.click", "ui.unknown.custom"]);
     expect(unsupported).toEqual(["ui.unknown.custom"]);

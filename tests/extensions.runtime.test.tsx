@@ -1,10 +1,21 @@
 import { act, render } from "@testing-library/react";
+import { useLayoutEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { UIExtensionsProvider, useUIExtensions } from "../src/extensions/runtime.js";
 
 function Harness({ onReady }: { onReady: (emit: ReturnType<typeof useUIExtensions>["emit"]) => void }): null {
   const extensions = useUIExtensions();
   onReady(extensions.emit);
+  return null;
+}
+
+function LayoutEffectEmitHarness(): null {
+  const { emit } = useUIExtensions();
+
+  useLayoutEffect(() => {
+    emit({ type: "ui.click", action: "click", component: "Button" });
+  }, [emit]);
+
   return null;
 }
 
@@ -66,6 +77,27 @@ describe("UIExtensionsProvider", () => {
     const [event, context] = call;
     expect(event.schemaVersion).toBe("1.0.0");
     expect(context.trackingPath).toEqual(["root"]);
+  });
+
+  it("dispatches events emitted during descendant layout effects", () => {
+    const listener = vi.fn();
+
+    render(
+      <UIExtensionsProvider
+        initialConfig={{ enabled: true }}
+        extensions={[
+          {
+            id: "test",
+            category: "instrumentation",
+            onEvent: listener
+          }
+        ]}
+      >
+        <LayoutEffectEmitHarness />
+      </UIExtensionsProvider>
+    );
+
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 
   it("replaces prop extensions and disposes removed registrations", () => {

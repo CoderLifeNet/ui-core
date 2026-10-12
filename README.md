@@ -13,7 +13,7 @@
 ## Installation
 
 ```bash
-pnpm add @coderlifenet/ui-core@0.1.0-alpha.2 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
+pnpm add @coderlifenet/ui-core@0.2.0-alpha.0 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
 ```
 
 Optional coverage:
@@ -94,9 +94,9 @@ Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Swit
 
 `AccordionSummary` keeps the published `ui.accordion.toggle` event contract. For `Autocomplete` composites, focus/blur ownership is assigned to `Autocomplete` (not the wrapped render-input `TextField`) to prevent duplicate logical focus events.
 
-Candidate branch APIs documented in this repository may differ from the currently published npm tarball (`0.1.0-alpha.2`) until a new release is cut.
+Candidate branch APIs documented in this repository may differ from the currently published npm tarball (`0.1.0-alpha.2`) until `0.2.0-alpha.0` is published.
 
-For branch review, identify candidates by source commit plus local artifact hash from `pnpm pack:local` output rather than assuming npm `0.1.0-alpha.2` parity.
+For branch review, identify candidates by source commit plus local artifact hash from `pnpm pack:local` output rather than assuming npm `0.2.0-alpha.0` parity.
 
 ## Inventory and Drift
 

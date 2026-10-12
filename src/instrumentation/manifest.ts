@@ -48,7 +48,7 @@ export type KnownUIEventType = keyof typeof uiEventCatalog;
 export const knownUIEventTypes: readonly KnownUIEventType[] = Object.keys(uiEventCatalog) as KnownUIEventType[];
 
 export function isKnownUIEventType(eventType: string): eventType is KnownUIEventType {
-  return eventType in uiEventCatalog;
+  return Object.prototype.hasOwnProperty.call(uiEventCatalog, eventType);
 }
 
 export function isDefaultEnabledEventType(eventType: string): boolean {

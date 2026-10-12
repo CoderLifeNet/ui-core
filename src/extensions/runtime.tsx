@@ -39,9 +39,10 @@ export function UIExtensionsProvider({
   extensions = [],
   initialConfig
 }: UIExtensionsProviderProps) {
-  const extensionMapRef = useRef<Map<string, RegisteredExtension>>(new Map());
+  const propExtensionMapRef = useRef<Map<string, UIExtension>>(new Map());
+  const previousPropExtensionMapRef = useRef<Map<string, UIExtension>>(new Map());
+  const runtimeExtensionMapRef = useRef<Map<string, RegisteredExtension>>(new Map());
   const registrationCounterRef = useRef(0);
-  const previousPropExtensionIdsRef = useRef<Set<string>>(new Set());
   const configRef = useRef<UIExtensionsConfig>({
     ...DEFAULT_CONFIG,
     ...initialConfig
@@ -59,7 +60,7 @@ export function UIExtensionsProvider({
   };
 
   const upsert = (entry: RegisteredExtension): void => {
-    const existing = extensionMapRef.current.get(entry.extension.id);
+    const existing = runtimeExtensionMapRef.current.get(entry.extension.id);
     if (
       existing &&
       (existing.registrationId !== entry.registrationId ||
@@ -68,41 +69,39 @@ export function UIExtensionsProvider({
     ) {
       safelyDispose(existing.extension);
     }
-    extensionMapRef.current.set(entry.extension.id, entry);
+    runtimeExtensionMapRef.current.set(entry.extension.id, entry);
   };
 
+  const nextPropExtensionMap = new Map<string, UIExtension>();
+  for (const extension of extensions) {
+    nextPropExtensionMap.set(extension.id, extension);
+  }
+  propExtensionMapRef.current = nextPropExtensionMap;
+
   useEffect(() => {
-    const nextIds = new Set<string>();
+    const previousPropMap = previousPropExtensionMapRef.current;
+    const nextPropMap = propExtensionMapRef.current;
 
-    for (const extension of extensions) {
-      nextIds.add(extension.id);
-      upsert({
-        extension,
-        registrationId: -1,
-        source: "prop"
-      });
-    }
-
-    for (const previousId of previousPropExtensionIdsRef.current) {
-      if (nextIds.has(previousId)) {
+    for (const [previousId, previousExtension] of previousPropMap.entries()) {
+      const replacement = nextPropMap.get(previousId);
+      if (replacement === previousExtension) {
         continue;
       }
-      const existing = extensionMapRef.current.get(previousId);
-      if (existing?.source === "prop") {
-        safelyDispose(existing.extension);
-        extensionMapRef.current.delete(previousId);
-      }
+      safelyDispose(previousExtension);
     }
 
-    previousPropExtensionIdsRef.current = nextIds;
+    previousPropExtensionMapRef.current = new Map(nextPropMap);
   }, [extensions]);
 
   useEffect(
     () => () => {
-      for (const registered of extensionMapRef.current.values()) {
+      for (const extension of propExtensionMapRef.current.values()) {
+        safelyDispose(extension);
+      }
+
+      for (const registered of runtimeExtensionMapRef.current.values()) {
         safelyDispose(registered.extension);
       }
-      extensionMapRef.current.clear();
     },
     []
   );
@@ -130,7 +129,14 @@ export function UIExtensionsProvider({
           optedOut: context.optedOut ?? false
         };
 
-        for (const registered of extensionMapRef.current.values()) {
+        for (const extension of propExtensionMapRef.current.values()) {
+          safeInvoke(extension, event, dispatchContext);
+        }
+
+        for (const [id, registered] of runtimeExtensionMapRef.current.entries()) {
+          if (propExtensionMapRef.current.has(id)) {
+            continue;
+          }
           safeInvoke(registered.extension, event, dispatchContext);
         }
       },
@@ -143,12 +149,12 @@ export function UIExtensionsProvider({
         });
 
         return () => {
-          const current = extensionMapRef.current.get(extension.id);
+          const current = runtimeExtensionMapRef.current.get(extension.id);
           if (!current || current.registrationId !== registrationId || current.source !== "runtime") {
             return;
           }
           safelyDispose(current.extension);
-          extensionMapRef.current.delete(extension.id);
+          runtimeExtensionMapRef.current.delete(extension.id);
         };
       },
       updateConfig: (next) => {
