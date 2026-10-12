@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { KnownUIEventType } from "../instrumentation/manifest.js";
 
 export type UIEventSchemaVersion = "1.0.0";
 
@@ -15,6 +16,12 @@ export interface UIEvent<TType extends string = string> {
 export interface ExtensionDispatchContext {
   trackingPath: readonly string[];
   optedOut: boolean;
+}
+
+export interface TrackingBoundaryMetadata {
+  semanticId?: string;
+  metadata?: Record<string, string | number | boolean | null>;
+  events?: readonly (KnownUIEventType | string)[];
 }
 
 export interface UIExtension {
@@ -46,4 +53,8 @@ export interface UIExtensionsProviderProps {
 export interface TrackingBoundaryValue {
   trackingPath: readonly string[];
   optedOut: boolean;
+  semanticId?: string;
+  metadata: Record<string, string | number | boolean | null>;
+  eventSelection?: ReadonlySet<string>;
+  hasEventSelection: boolean;
 }

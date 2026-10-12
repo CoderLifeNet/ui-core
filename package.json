@@ -1,6 +1,6 @@
 {
   "name": "@coderlifenet/ui-core",
-  "version": "0.1.0-alpha.2",
+  "version": "0.2.0-alpha.0",
   "description": "Compatibility facade over Material UI with optional instrumentation runtime.",
   "repository": {
     "type": "git",

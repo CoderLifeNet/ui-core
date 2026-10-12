@@ -7,6 +7,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "../src/material/Button.js";
 import { Autocomplete } from "../src/material/Autocomplete.js";
 import { Checkbox } from "../src/material/Checkbox.js";
+import { Radio } from "../src/material/Radio.js";
+import { Switch } from "../src/material/Switch.js";
+import { MenuItem } from "../src/material/MenuItem.js";
 import TextField from "../src/material/TextField.js";
 import { UIExtensionsProvider } from "../src/extensions/runtime.js";
 import { TrackingBoundary } from "../src/extensions/tracking-boundary.js";
@@ -221,5 +224,238 @@ describe("instrumentation runtime e2e", () => {
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange.mock.calls[0]?.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("does not emit TextField change by default", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TextField label="Plain text" />
+      </UIExtensionsProvider>
+    );
+
+    await user.type(screen.getByRole("textbox", { name: "Plain text" }), "abc");
+    expect(memory.read().some((entry) => entry.type === "ui.text_field.change")).toBe(false);
+  });
+
+  it("emits TextField change when scope explicitly enables it", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="form" events={["ui.text_field.change"]}>
+          <TextField label="Scoped text" />
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.type(screen.getByRole("textbox", { name: "Scoped text" }), "z");
+    expect(memory.read().some((entry) => entry.type === "ui.text_field.change")).toBe(true);
+  });
+
+  it("emits logical select-change events for TextField select variants", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TextField select label="Status" defaultValue="alpha">
+          <MenuItem value="alpha">Alpha</MenuItem>
+          <MenuItem value="beta">Beta</MenuItem>
+        </TextField>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Status" }));
+    await user.click(await screen.findByRole("option", { name: "Beta" }));
+
+    const selectEvent = memory.read().find((entry) => entry.type === "ui.select.change");
+    expect(selectEvent?.component).toBe("Select");
+  });
+
+  it("captures focus and blur coverage for form controls when explicitly selected", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary
+          id="focus-scope"
+          events={[
+            "ui.checkbox.focus",
+            "ui.checkbox.blur",
+            "ui.radio.focus",
+            "ui.radio.blur",
+            "ui.switch.focus",
+            "ui.switch.blur",
+            "ui.select.focus",
+            "ui.select.blur",
+            "ui.autocomplete.focus",
+            "ui.autocomplete.blur",
+            "ui.select.change",
+            "ui.autocomplete.change"
+          ]}
+        >
+          <Checkbox slotProps={{ input: { "aria-label": "focus checkbox" } }} />
+          <Radio slotProps={{ input: { "aria-label": "focus radio" } }} />
+          <Switch slotProps={{ input: { "aria-label": "focus switch" } }} />
+          <TextField select label="Focus Select" defaultValue="one">
+            <MenuItem value="one">One</MenuItem>
+            <MenuItem value="two">Two</MenuItem>
+          </TextField>
+          <Autocomplete
+            options={["Option A", "Option B"]}
+            renderInput={(params) => <TextField {...params} label="Focus Autocomplete" />}
+          />
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    const checkbox = screen.getByLabelText("focus checkbox");
+    const radio = screen.getByLabelText("focus radio");
+    const toggle = screen.getByLabelText("focus switch");
+    const select = screen.getByRole("combobox", { name: "Focus Select" });
+    const auto = screen.getByRole("combobox", { name: "Focus Autocomplete" });
+
+    await user.click(checkbox);
+    await user.click(radio);
+    await user.click(toggle);
+
+    await user.click(select);
+    await user.click(await screen.findByRole("option", { name: "Two" }));
+
+    await user.click(auto);
+    await user.click(await screen.findByRole("option", { name: "Option A" }));
+    await user.tab();
+
+    const types = memory.read().map((entry) => entry.type);
+    expect(types).toContain("ui.checkbox.focus");
+    expect(types).toContain("ui.checkbox.blur");
+    expect(types).toContain("ui.radio.focus");
+    expect(types).toContain("ui.radio.blur");
+    expect(types).toContain("ui.switch.focus");
+    expect(types).toContain("ui.switch.blur");
+    expect(types).toContain("ui.select.focus");
+    expect(types).toContain("ui.select.blur");
+    expect(types).toContain("ui.autocomplete.focus");
+    expect(types).toContain("ui.autocomplete.blur");
+  });
+
+  it("emits one logical focus/blur event for Autocomplete composites when both families are selected", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary
+          id="autocomplete-focus-scope"
+          events={[
+            "ui.autocomplete.focus",
+            "ui.autocomplete.blur",
+            "ui.text_field.focus",
+            "ui.text_field.blur"
+          ]}
+        >
+          <Autocomplete
+            options={["Alpha", "Beta"]}
+            renderInput={(params) => <TextField {...params} label="Autocomplete Ownership" />}
+          />
+          <TextField label="Independent Field" />
+          <Button>After Focus</Button>
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Autocomplete Ownership" }));
+    await user.click(screen.getByRole("button", { name: "After Focus" }));
+    await user.click(screen.getByRole("textbox", { name: "Independent Field" }));
+    await user.click(screen.getByRole("button", { name: "After Focus" }));
+
+    const types = memory.read().map((entry) => entry.type);
+    expect(types.filter((type) => type === "ui.autocomplete.focus")).toHaveLength(1);
+    expect(types.filter((type) => type === "ui.autocomplete.blur")).toHaveLength(1);
+    expect(types.filter((type) => type === "ui.text_field.focus")).toHaveLength(1);
+    expect(types.filter((type) => type === "ui.text_field.blur")).toHaveLength(1);
+  });
+
+  it("does not emit Autocomplete-composite focus/blur when only child TextField family is selected", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="autocomplete-child-only" events={["ui.text_field.focus", "ui.text_field.blur"]}>
+          <Autocomplete
+            options={["Alpha", "Beta"]}
+            renderInput={(params) => <TextField {...params} label="Autocomplete Child Only" />}
+          />
+          <Button>Outside</Button>
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Autocomplete Child Only" }));
+    await user.click(screen.getByRole("button", { name: "Outside" }));
+
+    const types = memory.read().map((entry) => entry.type);
+    expect(types).not.toContain("ui.autocomplete.focus");
+    expect(types).not.toContain("ui.autocomplete.blur");
+    expect(types).not.toContain("ui.text_field.focus");
+    expect(types).not.toContain("ui.text_field.blur");
+  });
+
+  it("preserves inputRef and accessible helper-text wiring", () => {
+    const inputRef = vi.fn();
+
+    render(
+      <TextField
+        label="Email"
+        helperText="Used for notifications"
+        error
+        inputRef={inputRef}
+        slotProps={{ htmlInput: { "aria-label": "email input" } }}
+      />
+    );
+
+    expect(inputRef).toHaveBeenCalled();
+    const input = screen.getByLabelText("email input");
+    expect(input.getAttribute("aria-describedby")).toBeTruthy();
+    expect(screen.getByText("Used for notifications")).toBeTruthy();
+  });
+
+  it("never includes sentinel user content in default payload metadata", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+    const typedSentinel = "SENTINEL_TYPED_7743";
+    const selectedSentinel = "SENTINEL_SELECTED_8821";
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="privacy" events={["ui.text_field.change", "ui.autocomplete.change", "ui.select.change"]}>
+          <TextField label="Privacy Text" />
+          <TextField select label="Privacy Select" defaultValue="a">
+            <MenuItem value="a">A</MenuItem>
+            <MenuItem value="b">{selectedSentinel}</MenuItem>
+          </TextField>
+          <Autocomplete
+            options={[selectedSentinel, "Other"]}
+            renderInput={(params) => <TextField {...params} label="Privacy Autocomplete" />}
+          />
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.type(screen.getByRole("textbox", { name: "Privacy Text" }), typedSentinel);
+    await user.click(screen.getByRole("combobox", { name: "Privacy Select" }));
+    await user.click(await screen.findByRole("option", { name: selectedSentinel }));
+    await user.click(screen.getByRole("combobox", { name: "Privacy Autocomplete" }));
+    await user.click(await screen.findByRole("option", { name: selectedSentinel }));
+
+    const payload = JSON.stringify(memory.read());
+    expect(payload).not.toContain(typedSentinel);
+    expect(payload).not.toContain(selectedSentinel);
   });
 });

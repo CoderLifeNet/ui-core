@@ -43,7 +43,7 @@ jobs:
         with:
           name: npm-alpha-${{ github.sha }}
           path: |
-            artifacts/coderlifenet-ui-core-0.1.0-alpha.2.tgz
+            artifacts/coderlifenet-ui-core-*.tgz
             artifacts/release.json
           if-no-files-found: error
           retention-days: 30

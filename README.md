@@ -13,7 +13,7 @@
 ## Installation
 
 ```bash
-pnpm add @coderlifenet/ui-core@0.1.0-alpha.2 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
+pnpm add @coderlifenet/ui-core@0.2.0-alpha.0 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
 ```
 
 Optional coverage:
@@ -62,16 +62,41 @@ memory.configure?.({ enabled: true, sampleRate: 1 });
   initialConfig={{ enabled: true }}
   extensions={[createAnalyticsExtension(analyticsRuntime)]}
 >
-  <TrackingBoundary id="app-shell">{/* app */}</TrackingBoundary>
+  <TrackingBoundary id="app-shell" semanticId="app" metadata={{ area: "shell" }}>
+    <TrackingBoundary id="order-form" events={["ui.text_field.change", "ui.text_field.blur"]}>
+      {/* app */}
+    </TrackingBoundary>
+  </TrackingBoundary>
 </UIExtensionsProvider>;
 ```
+
+Keep a single runtime instance and apply state changes with `analyticsRuntime.update(...)` in an effect, not during render. To replace integrations without rebuilding host wiring, use `analyticsRuntime.setAdapters(nextAdapters)`; existing dispatch config is preserved and removed adapters are disposed safely by default.
+
+`TrackingBoundary` supports:
+
+- `id`: required tracking path segment.
+- `optOut`: disables nested delivery for private zones.
+- `semanticId`: nearest default semantic identity.
+- `metadata`: static content-free metadata merged by scope.
+- `events`: optional event-type allowlist (nested allowlists intersect).
 
 ## Analytics Defaults
 
 - Global analytics delivery is disabled by default.
 - Consent must be explicitly granted (`analyticsStorage: "granted"`).
+- Meta Pixel requires both analytics and advertising consent (`adStorage: "granted"`).
 - No vendor SDK script is loaded by this package.
 - Host applications own SDK loading, lifecycle, and consent wiring.
+
+Input-family high-volume events are disabled by default (`TextField`, `InputBase`, `Input`, `FilledInput`, `OutlinedInput`, `NativeSelect`) and can be explicitly enabled per scope with `TrackingBoundary.events`.
+
+Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Switch` is available and default-disabled unless explicitly selected via scope allowlists.
+
+`AccordionSummary` keeps the published `ui.accordion.toggle` event contract. For `Autocomplete` composites, focus/blur ownership is assigned to `Autocomplete` (not the wrapped render-input `TextField`) to prevent duplicate logical focus events.
+
+Candidate branch APIs documented in this repository may differ from the currently published npm tarball (`0.1.0-alpha.2`) until `0.2.0-alpha.0` is published.
+
+For branch review, identify candidates by source commit plus local artifact hash from `pnpm pack:local` output rather than assuming npm `0.2.0-alpha.0` parity.
 
 ## Inventory and Drift
 

@@ -24,6 +24,7 @@ describe("analytics adapters", () => {
       component: "Button",
       action: "click",
       semantic_id: "save",
+      tracking_path: "",
       variant: "contained"
     });
   });
@@ -36,6 +37,7 @@ describe("analytics adapters", () => {
     expect(trackAction).toHaveBeenCalledWith("ui.button.click", {
       component: "Button",
       semanticId: "save",
+      trackingPath: "",
       variant: "contained"
     });
   });
@@ -49,6 +51,7 @@ describe("analytics adapters", () => {
       component: "Button",
       action: "click",
       semantic_id: "save",
+      tracking_path: "",
       variant: "contained"
     });
   });

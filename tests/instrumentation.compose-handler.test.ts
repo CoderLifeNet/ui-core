@@ -119,4 +119,24 @@ describe("composeHandler", () => {
     expect(firstEmit).toHaveBeenCalledTimes(1);
     expect(secondEmit).toHaveBeenCalledTimes(1);
   });
+
+  it("handles frozen native events without mutation or throw", () => {
+    const emit = vi.fn();
+    const nativeEvent = Object.freeze({});
+    const event = {
+      nativeEvent,
+      isDefaultPrevented: () => false,
+      isPropagationStopped: () => false
+    };
+
+    const handler = composeHandler<[typeof event]>({
+      userHandler: () => undefined,
+      emit,
+      dedupeKey: "click:Button",
+      eventFactory: () => ({ type: "ui.button.click", action: "click", component: "Button" })
+    });
+
+    expect(() => handler(event as never)).not.toThrow();
+    expect(emit).toHaveBeenCalledTimes(1);
+  });
 });

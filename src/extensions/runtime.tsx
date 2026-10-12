@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useRef } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import type {
   ExtensionDispatchContext,
   UIEvent,
@@ -16,6 +16,12 @@ const DEFAULT_CONFIG: UIExtensionsConfig = {
 };
 
 const UIExtensionsContext = createContext<UIExtensionsContextValue | null>(null);
+
+interface RegisteredExtension {
+  source: "prop" | "runtime";
+  registrationId: number;
+  extension: UIExtension;
+}
 
 function safeInvoke(extension: UIExtension, event: UIEvent, context: ExtensionDispatchContext): void {
   try {
@@ -33,23 +39,82 @@ export function UIExtensionsProvider({
   extensions = [],
   initialConfig
 }: UIExtensionsProviderProps) {
-  const extensionMapRef = useRef<Map<string, UIExtension>>(new Map());
+  const propExtensionMapRef = useRef<Map<string, UIExtension>>(new Map());
+  const previousPropExtensionMapRef = useRef<Map<string, UIExtension>>(new Map());
+  const runtimeExtensionMapRef = useRef<Map<string, RegisteredExtension>>(new Map());
+  const registrationCounterRef = useRef(0);
   const configRef = useRef<UIExtensionsConfig>({
     ...DEFAULT_CONFIG,
     ...initialConfig
   });
 
-  if (extensionMapRef.current.size === 0 && extensions.length > 0) {
-    for (const extension of extensions) {
-      extensionMapRef.current.set(extension.id, extension);
+  const safelyDispose = (extension: UIExtension): void => {
+    try {
+      const result = extension.dispose?.();
+      if (result && typeof (result as Promise<void>).catch === "function") {
+        (result as Promise<void>).catch(() => undefined);
+      }
+    } catch {
+      // Disposal failures must not break host cleanup.
     }
+  };
+
+  const upsert = (entry: RegisteredExtension): void => {
+    const existing = runtimeExtensionMapRef.current.get(entry.extension.id);
+    if (
+      existing &&
+      (existing.registrationId !== entry.registrationId ||
+        existing.source !== entry.source ||
+        existing.extension !== entry.extension)
+    ) {
+      safelyDispose(existing.extension);
+    }
+    runtimeExtensionMapRef.current.set(entry.extension.id, entry);
+  };
+
+  const nextPropExtensionMap = new Map<string, UIExtension>();
+  for (const extension of extensions) {
+    nextPropExtensionMap.set(extension.id, extension);
   }
+  propExtensionMapRef.current = nextPropExtensionMap;
+
+  useEffect(() => {
+    const previousPropMap = previousPropExtensionMapRef.current;
+    const nextPropMap = propExtensionMapRef.current;
+
+    for (const [previousId, previousExtension] of previousPropMap.entries()) {
+      const replacement = nextPropMap.get(previousId);
+      if (replacement === previousExtension) {
+        continue;
+      }
+      safelyDispose(previousExtension);
+    }
+
+    previousPropExtensionMapRef.current = new Map(nextPropMap);
+  }, [extensions]);
+
+  useEffect(
+    () => () => {
+      for (const extension of propExtensionMapRef.current.values()) {
+        safelyDispose(extension);
+      }
+
+      for (const registered of runtimeExtensionMapRef.current.values()) {
+        safelyDispose(registered.extension);
+      }
+    },
+    []
+  );
 
   const api = useMemo<UIExtensionsContextValue>(
     () => ({
       emit: (inputEvent, context = {}) => {
         const currentConfig = configRef.current;
         if (!currentConfig.enabled) {
+          return;
+        }
+
+        if (context.optedOut) {
           return;
         }
 
@@ -64,15 +129,32 @@ export function UIExtensionsProvider({
           optedOut: context.optedOut ?? false
         };
 
-        for (const extension of extensionMapRef.current.values()) {
+        for (const extension of propExtensionMapRef.current.values()) {
           safeInvoke(extension, event, dispatchContext);
+        }
+
+        for (const [id, registered] of runtimeExtensionMapRef.current.entries()) {
+          if (propExtensionMapRef.current.has(id)) {
+            continue;
+          }
+          safeInvoke(registered.extension, event, dispatchContext);
         }
       },
       register: (extension) => {
-        extensionMapRef.current.set(extension.id, extension);
+        const registrationId = ++registrationCounterRef.current;
+        upsert({
+          extension,
+          registrationId,
+          source: "runtime"
+        });
+
         return () => {
-          extension.dispose?.();
-          extensionMapRef.current.delete(extension.id);
+          const current = runtimeExtensionMapRef.current.get(extension.id);
+          if (!current || current.registrationId !== registrationId || current.source !== "runtime") {
+            return;
+          }
+          safelyDispose(current.extension);
+          runtimeExtensionMapRef.current.delete(extension.id);
         };
       },
       updateConfig: (next) => {

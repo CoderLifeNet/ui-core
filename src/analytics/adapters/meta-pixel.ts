@@ -25,15 +25,17 @@ export function createMetaPixelAdapter(options: MetaPixelAdapterOptions): Analyt
     configure: (next) => {
       adapterConfig = next;
     },
-    onEvent: (event) => {
+    onEvent: (event, context) => {
       if (!adapterConfig.enabled) {
         return;
       }
+      const sanitized = sanitizeMetadata(event.metadata, ["component", "action", "semantic_id", "tracking_path"]);
       options.client("trackCustom", options.eventMapper?.(event) ?? event.type, {
         component: event.component,
         action: event.action,
         semantic_id: event.semanticId,
-        ...sanitizeMetadata(event.metadata)
+        tracking_path: context?.trackingPath.join("/") ?? "",
+        ...sanitized
       });
     }
   };

@@ -4,9 +4,12 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithRef } from "react";
 import type { AutocompleteChangeReason, AutocompleteProps } from "@mui/material/Autocomplete";
 import MuiAutocomplete from "@mui/material/Autocomplete";
+import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
+import { CompositeEventOwnershipProvider } from "./composite-event-ownership.js";
+import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type AutocompleteRef = ComponentPropsWithRef<typeof MuiAutocomplete>["ref"];
 
@@ -17,12 +20,19 @@ type AutocompleteChangeArgs<
   FreeSolo extends boolean | undefined
 > = Parameters<NonNullable<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onChange"]>>;
 
-function hasAutocompleteValue(input: unknown): boolean {
-  if (Array.isArray(input)) {
-    return input.length > 0;
-  }
-  return input !== null && input !== undefined;
-}
+type AutocompleteFocusArgs<
+  TValue,
+  Multiple extends boolean | undefined,
+  DisableClearable extends boolean | undefined,
+  FreeSolo extends boolean | undefined
+> = Parameters<NonNullable<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onFocus"]>>;
+
+type AutocompleteBlurArgs<
+  TValue,
+  Multiple extends boolean | undefined,
+  DisableClearable extends boolean | undefined,
+  FreeSolo extends boolean | undefined
+> = Parameters<NonNullable<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onBlur"]>>;
 
 function AutocompleteImpl<
   TValue,
@@ -34,24 +44,65 @@ function AutocompleteImpl<
   ref: AutocompleteRef
 ) {
   const emit = useEmitUIEvent();
-  const { onChange, ...props } = inProps;
+  const theme = useTheme();
+  const { onChange, onFocus, onBlur, renderInput, ...props } = inProps;
+  const resolvedOnChange = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onChange"]>(
+    theme,
+    "MuiAutocomplete",
+    "onChange",
+    onChange
+  );
+  const resolvedOnFocus = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onFocus"]>(
+    theme,
+    "MuiAutocomplete",
+    "onFocus",
+    onFocus
+  );
+  const resolvedOnBlur = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onBlur"]>(
+    theme,
+    "MuiAutocomplete",
+    "onBlur",
+    onBlur
+  );
 
   return (
     <MuiAutocomplete
       {...props}
       ref={ref}
+      renderInput={(params) => (
+        <CompositeEventOwnershipProvider owner="Autocomplete">{renderInput(params)}</CompositeEventOwnershipProvider>
+      )}
       onChange={composeHandler<AutocompleteChangeArgs<TValue, Multiple, DisableClearable, FreeSolo>>({
-        userHandler: onChange,
+        userHandler: resolvedOnChange,
         emit,
         dedupeKey: "change:Autocomplete",
-        eventFactory: (_event, value, reason: AutocompleteChangeReason) => ({
+        eventFactory: (_event, _value, reason: AutocompleteChangeReason) => ({
           type: "ui.autocomplete.change",
           action: "change",
           component: "Autocomplete",
           metadata: {
-            reason,
-            hasValue: hasAutocompleteValue(value)
+            reason
           }
+        })
+      })}
+      onFocus={composeHandler<AutocompleteFocusArgs<TValue, Multiple, DisableClearable, FreeSolo>>({
+        userHandler: resolvedOnFocus,
+        emit,
+        dedupeKey: "focus:Autocomplete",
+        eventFactory: () => ({
+          type: "ui.autocomplete.focus",
+          action: "focus",
+          component: "Autocomplete"
+        })
+      })}
+      onBlur={composeHandler<AutocompleteBlurArgs<TValue, Multiple, DisableClearable, FreeSolo>>({
+        userHandler: resolvedOnBlur,
+        emit,
+        dedupeKey: "blur:Autocomplete",
+        eventFactory: () => ({
+          type: "ui.autocomplete.blur",
+          action: "blur",
+          component: "Autocomplete"
         })
       })}
     />
