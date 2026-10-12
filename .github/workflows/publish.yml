@@ -63,7 +63,6 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22.22.3
-          registry-url: https://registry.npmjs.org/
       - run: npm install --global npm@11.11.1
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -75,5 +74,14 @@ jobs:
           NODE_AUTH_TOKEN: ${{ inputs.mode == 'publish-bootstrap' && secrets.NPM_BOOTSTRAP_TOKEN || '' }}
           RELEASE_MODE: ${{ inputs.mode }}
         run: |
-          if [ "$RELEASE_MODE" = publish-bootstrap ]; then test -n "$NODE_AUTH_TOKEN"; fi
+          TMP_NPMRC="$RUNNER_TEMP/.npmrc-release"
+          if [ "$RELEASE_MODE" = publish-bootstrap ]; then
+            test -n "$NODE_AUTH_TOKEN"
+            printf '//registry.npmjs.org/:_authToken=%s\nregistry=https://registry.npmjs.org/\n' "$NODE_AUTH_TOKEN" > "$TMP_NPMRC"
+            export NPM_CONFIG_USERCONFIG="$TMP_NPMRC"
+          else
+            printf 'registry=https://registry.npmjs.org/\n' > "$TMP_NPMRC"
+            export NPM_CONFIG_USERCONFIG="$TMP_NPMRC"
+            unset NODE_AUTH_TOKEN
+          fi
           node scripts/check-release.mjs --publish
