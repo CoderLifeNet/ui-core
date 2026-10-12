@@ -344,7 +344,7 @@ describe("instrumentation runtime e2e", () => {
     expect(types).toContain("ui.autocomplete.blur");
   });
 
-  it("emits distinct Autocomplete and wrapped TextField focus/blur events when both are selected", async () => {
+  it("emits one logical focus/blur event for Autocomplete composites when both families are selected", async () => {
     const user = userEvent.setup();
     const { memory, runtime } = setupWithMemory(true);
 
@@ -363,6 +363,7 @@ describe("instrumentation runtime e2e", () => {
             options={["Alpha", "Beta"]}
             renderInput={(params) => <TextField {...params} label="Autocomplete Ownership" />}
           />
+          <TextField label="Independent Field" />
           <Button>After Focus</Button>
         </TrackingBoundary>
       </UIExtensionsProvider>
@@ -370,12 +371,40 @@ describe("instrumentation runtime e2e", () => {
 
     await user.click(screen.getByRole("combobox", { name: "Autocomplete Ownership" }));
     await user.click(screen.getByRole("button", { name: "After Focus" }));
+    await user.click(screen.getByRole("textbox", { name: "Independent Field" }));
+    await user.click(screen.getByRole("button", { name: "After Focus" }));
 
     const types = memory.read().map((entry) => entry.type);
-    expect(types).toContain("ui.autocomplete.focus");
-    expect(types).toContain("ui.autocomplete.blur");
-    expect(types).toContain("ui.text_field.focus");
-    expect(types).toContain("ui.text_field.blur");
+    expect(types.filter((type) => type === "ui.autocomplete.focus")).toHaveLength(1);
+    expect(types.filter((type) => type === "ui.autocomplete.blur")).toHaveLength(1);
+    expect(types.filter((type) => type === "ui.text_field.focus")).toHaveLength(1);
+    expect(types.filter((type) => type === "ui.text_field.blur")).toHaveLength(1);
+  });
+
+  it("does not emit Autocomplete-composite focus/blur when only child TextField family is selected", async () => {
+    const user = userEvent.setup();
+    const { memory, runtime } = setupWithMemory(true);
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="autocomplete-child-only" events={["ui.text_field.focus", "ui.text_field.blur"]}>
+          <Autocomplete
+            options={["Alpha", "Beta"]}
+            renderInput={(params) => <TextField {...params} label="Autocomplete Child Only" />}
+          />
+          <Button>Outside</Button>
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Autocomplete Child Only" }));
+    await user.click(screen.getByRole("button", { name: "Outside" }));
+
+    const types = memory.read().map((entry) => entry.type);
+    expect(types).not.toContain("ui.autocomplete.focus");
+    expect(types).not.toContain("ui.autocomplete.blur");
+    expect(types).not.toContain("ui.text_field.focus");
+    expect(types).not.toContain("ui.text_field.blur");
   });
 
   it("preserves inputRef and accessible helper-text wiring", () => {

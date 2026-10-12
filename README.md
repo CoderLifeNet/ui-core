@@ -92,6 +92,8 @@ Input-family high-volume events are disabled by default (`TextField`, `InputBase
 
 Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Switch` is available and default-disabled unless explicitly selected via scope allowlists.
 
+`AccordionSummary` keeps the published `ui.accordion.toggle` event contract. For `Autocomplete` composites, focus/blur ownership is assigned to `Autocomplete` (not the wrapped render-input `TextField`) to prevent duplicate logical focus events.
+
 Candidate branch APIs documented in this repository may differ from the currently published npm tarball (`0.1.0-alpha.2`) until a new release is cut.
 
 For branch review, identify candidates by source commit plus local artifact hash from `pnpm pack:local` output rather than assuming npm `0.1.0-alpha.2` parity.

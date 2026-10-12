@@ -39,6 +39,7 @@ describe("instrumentation manifest", () => {
       consent: { analyticsStorage: "granted", adStorage: "denied" }
     });
     const advertisedEvent = instrumentableComponents.AccordionSummary[0];
+    expect(advertisedEvent).toBe("ui.accordion.toggle");
 
     render(
       <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>

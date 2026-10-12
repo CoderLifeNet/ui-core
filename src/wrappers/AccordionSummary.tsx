@@ -36,8 +36,8 @@ function AccordionSummaryImpl(
         emit,
         dedupeKey: "click:AccordionSummary",
         eventFactory: () => ({
-          type: "ui.accordion_summary.click",
-          action: "click",
+          type: "ui.accordion.toggle",
+          action: "toggle",
           component: "AccordionSummary"
         })
       })}

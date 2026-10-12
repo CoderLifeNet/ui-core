@@ -7,6 +7,7 @@ import type { TextFieldProps } from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useIsCompositeEventOwnedBy } from "./composite-event-ownership.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler, useResolvedDefaultProp } from "./resolve-theme-default-handler.js";
 
@@ -28,8 +29,10 @@ function TextFieldImpl(inProps: TextFieldProps, ref: TextFieldRef) {
   const resolvedOnFocus = useResolvedDefaultHandler<TextFieldProps["onFocus"]>(theme, "MuiTextField", "onFocus", onFocus);
   const resolvedOnBlur = useResolvedDefaultHandler<TextFieldProps["onBlur"]>(theme, "MuiTextField", "onBlur", onBlur);
   const resolvedSelect = useResolvedDefaultProp<boolean | undefined>(theme, "MuiTextField", "select", inProps.select);
+  const isAutocompleteOwned = useIsCompositeEventOwnedBy("Autocomplete");
 
   const ownsSelectEvents = Boolean(resolvedSelect);
+  const suppressTextFieldFocusBlur = isAutocompleteOwned && !ownsSelectEvents;
 
   return (
     <MuiTextField
@@ -48,28 +51,36 @@ function TextFieldImpl(inProps: TextFieldProps, ref: TextFieldRef) {
         })
       }
       onFocus={
-        composeHandler<TextFieldFocusArgs>({
-          userHandler: resolvedOnFocus,
-          emit,
-          dedupeKey: ownsSelectEvents ? "focus:Select" : "focus:TextField",
-          eventFactory: () => ({
-            type: ownsSelectEvents ? "ui.select.focus" : "ui.text_field.focus",
-            action: "focus",
-            component: ownsSelectEvents ? "Select" : "TextField"
-          })
-        })
+        suppressTextFieldFocusBlur
+          ? (...args: TextFieldFocusArgs) => {
+              resolvedOnFocus?.(...args);
+            }
+          : composeHandler<TextFieldFocusArgs>({
+              userHandler: resolvedOnFocus,
+              emit,
+              dedupeKey: ownsSelectEvents ? "focus:Select" : "focus:TextField",
+              eventFactory: () => ({
+                type: ownsSelectEvents ? "ui.select.focus" : "ui.text_field.focus",
+                action: "focus",
+                component: ownsSelectEvents ? "Select" : "TextField"
+              })
+            })
       }
       onBlur={
-        composeHandler<TextFieldBlurArgs>({
-          userHandler: resolvedOnBlur,
-          emit,
-          dedupeKey: ownsSelectEvents ? "blur:Select" : "blur:TextField",
-          eventFactory: () => ({
-            type: ownsSelectEvents ? "ui.select.blur" : "ui.text_field.blur",
-            action: "blur",
-            component: ownsSelectEvents ? "Select" : "TextField"
-          })
-        })
+        suppressTextFieldFocusBlur
+          ? (...args: TextFieldBlurArgs) => {
+              resolvedOnBlur?.(...args);
+            }
+          : composeHandler<TextFieldBlurArgs>({
+              userHandler: resolvedOnBlur,
+              emit,
+              dedupeKey: ownsSelectEvents ? "blur:Select" : "blur:TextField",
+              eventFactory: () => ({
+                type: ownsSelectEvents ? "ui.select.blur" : "ui.text_field.blur",
+                action: "blur",
+                component: ownsSelectEvents ? "Select" : "TextField"
+              })
+            })
       }
     />
   );
