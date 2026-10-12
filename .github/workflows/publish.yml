@@ -69,6 +69,11 @@ jobs:
           name: npm-alpha-${{ github.sha }}
           path: artifacts/
       - run: node scripts/check-release.mjs --verify-only --available
+      - name: Inspect OIDC claims for npm audience
+        run: |
+          OIDC_RESPONSE=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:registry.npmjs.org")
+          OIDC_TOKEN=$(printf '%s' "$OIDC_RESPONSE" | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).value")
+          printf '%s' "$OIDC_TOKEN" | node -e "const token=require('fs').readFileSync(0,'utf8').trim(); const payload=JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8')); const {aud,repository,repository_owner,job_workflow_ref,workflow_ref,environment,ref,sha}=payload; console.log(JSON.stringify({aud,repository,repository_owner,job_workflow_ref,workflow_ref,environment,ref,sha}, null, 2));"
       - name: Publish the validated tarball under alpha only
         env:
           NODE_AUTH_TOKEN: ${{ inputs.mode == 'publish-bootstrap' && secrets.NPM_BOOTSTRAP_TOKEN || '' }}
@@ -85,3 +90,12 @@ jobs:
             unset NODE_AUTH_TOKEN
           fi
           node scripts/check-release.mjs --publish
+      - name: Dump npm debug logs on publish failure
+        if: failure()
+        run: |
+          ls -la /home/runner/.npm/_logs || true
+          for file in /home/runner/.npm/_logs/*-debug-*.log; do
+            [ -f "$file" ] || continue
+            echo "===== $file ====="
+            cat "$file"
+          done
