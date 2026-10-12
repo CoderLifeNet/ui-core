@@ -133,4 +133,98 @@ describe("createAnalyticsRuntime", () => {
 
     expect(memory.read()).toHaveLength(1);
   });
+
+  it("blocks dispatch when context is explicitly opted out", () => {
+    const memory = createMemoryAdapter();
+    const runtime = createAnalyticsRuntime([memory], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "granted" }
+    });
+
+    runtime.dispatch(
+      {
+        schemaVersion: "1.0.0",
+        type: "ui.click",
+        action: "click",
+        component: "Button",
+        timestamp: Date.now()
+      },
+      { optedOut: true, trackingPath: ["private"] }
+    );
+
+    expect(memory.read()).toHaveLength(0);
+  });
+
+  it("requires adStorage consent for meta-pixel adapters", () => {
+    const meta = {
+      id: "meta-pixel",
+      kind: "meta-pixel" as const,
+      onEvent: vi.fn()
+    };
+
+    const runtime = createAnalyticsRuntime([meta], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "denied" }
+    });
+
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+    expect(meta.onEvent).not.toHaveBeenCalled();
+
+    runtime.update({ consent: { analyticsStorage: "granted", adStorage: "granted" } });
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+    expect(meta.onEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it("contains configure failures", () => {
+    const adapter = {
+      id: "custom",
+      kind: "custom" as const,
+      configure: vi.fn(() => {
+        throw new Error("configure failed");
+      }),
+      onEvent: vi.fn()
+    };
+
+    expect(() =>
+      createAnalyticsRuntime([adapter], {
+        enabled: true,
+        consent: { analyticsStorage: "granted", adStorage: "denied" }
+      })
+    ).not.toThrow();
+  });
+
+  it("propagates tracking context into memory adapter inspection API", () => {
+    const memory = createMemoryAdapter();
+    const runtime = createAnalyticsRuntime([memory], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "granted" }
+    });
+
+    runtime.dispatch(
+      {
+        schemaVersion: "1.0.0",
+        type: "ui.click",
+        action: "click",
+        component: "Button",
+        timestamp: Date.now()
+      },
+      { trackingPath: ["app", "toolbar"], optedOut: false }
+    );
+
+    expect(memory.read()).toHaveLength(1);
+    expect(memory.readContext()).toHaveLength(1);
+    expect(memory.readContext()[0]?.trackingPath).toEqual(["app", "toolbar"]);
+  });
 });

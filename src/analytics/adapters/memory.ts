@@ -1,8 +1,9 @@
 import type { UIEvent } from "../../extensions/types.js";
-import type { AnalyticsAdapter, AnalyticsAdapterConfig } from "../types.js";
+import type { AnalyticsAdapter, AnalyticsAdapterConfig, AnalyticsDispatchContext } from "../types.js";
 
 export interface MemoryAdapter extends AnalyticsAdapter {
   read: () => readonly UIEvent[];
+  readContext: () => readonly AnalyticsDispatchContext[];
   clear: () => void;
 }
 
@@ -12,6 +13,7 @@ export function createMemoryAdapter(id = "memory"): MemoryAdapter {
     sampleRate: 1
   };
   const events: UIEvent[] = [];
+  const contexts: AnalyticsDispatchContext[] = [];
 
   return {
     id,
@@ -19,15 +21,22 @@ export function createMemoryAdapter(id = "memory"): MemoryAdapter {
     configure: (next) => {
       adapterConfig = next;
     },
-    onEvent: (event) => {
+    onEvent: (event, context) => {
       if (!adapterConfig.enabled) {
         return;
       }
       events.push(event);
+      contexts.push({
+        trackingPath: context?.trackingPath ?? [],
+        optedOut: context?.optedOut ?? false,
+        consent: context?.consent ?? { analyticsStorage: "denied", adStorage: "denied" }
+      });
     },
     read: () => events,
+    readContext: () => contexts,
     clear: () => {
       events.splice(0, events.length);
+      contexts.splice(0, contexts.length);
     }
   };
 }

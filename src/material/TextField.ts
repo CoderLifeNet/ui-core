@@ -1,2 +1,2 @@
 export * from "@mui/material/TextField";
-export { default } from "@mui/material/TextField";
+export { TextField as default, TextField } from "../wrappers/TextField.js";

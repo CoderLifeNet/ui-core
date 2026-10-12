@@ -4,30 +4,57 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithRef } from "react";
 import MuiSwitch from "@mui/material/Switch";
 import type { SwitchProps } from "@mui/material/Switch";
+import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
+import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type SwitchRef = ComponentPropsWithRef<typeof MuiSwitch>["ref"];
 type SwitchChangeArgs = Parameters<NonNullable<SwitchProps["onChange"]>>;
+type SwitchFocusArgs = Parameters<NonNullable<SwitchProps["onFocus"]>>;
+type SwitchBlurArgs = Parameters<NonNullable<SwitchProps["onBlur"]>>;
 
 function SwitchImpl(inProps: SwitchProps, ref: SwitchRef) {
   const emit = useEmitUIEvent();
-  const { onChange, ...props } = inProps;
+  const theme = useTheme();
+  const { onChange, onFocus, onBlur, ...props } = inProps;
+  const resolvedOnChange = resolveThemeDefaultHandler<SwitchProps["onChange"]>(theme, "MuiSwitch", "onChange", onChange);
+  const resolvedOnFocus = resolveThemeDefaultHandler<SwitchProps["onFocus"]>(theme, "MuiSwitch", "onFocus", onFocus);
+  const resolvedOnBlur = resolveThemeDefaultHandler<SwitchProps["onBlur"]>(theme, "MuiSwitch", "onBlur", onBlur);
 
   return (
     <MuiSwitch
       {...props}
       ref={ref}
       onChange={composeHandler<SwitchChangeArgs>({
-        userHandler: onChange,
+        userHandler: resolvedOnChange,
         emit,
         dedupeKey: "change:Switch",
-        eventFactory: (_, checked) => ({
+        eventFactory: () => ({
           type: "ui.switch.change",
           action: "change",
-          component: "Switch",
-          metadata: { checked }
+          component: "Switch"
+        })
+      })}
+      onFocus={composeHandler<SwitchFocusArgs>({
+        userHandler: resolvedOnFocus,
+        emit,
+        dedupeKey: "focus:Switch",
+        eventFactory: () => ({
+          type: "ui.switch.focus",
+          action: "focus",
+          component: "Switch"
+        })
+      })}
+      onBlur={composeHandler<SwitchBlurArgs>({
+        userHandler: resolvedOnBlur,
+        emit,
+        dedupeKey: "blur:Switch",
+        eventFactory: () => ({
+          type: "ui.switch.blur",
+          action: "blur",
+          component: "Switch"
         })
       })}
     />

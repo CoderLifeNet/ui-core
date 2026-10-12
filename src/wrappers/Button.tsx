@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { preserveComponentType } from "./preserve-component-type.js";
+import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type ButtonRef = ComponentPropsWithRef<typeof MuiButton>["ref"];
 type ButtonClickArgs = Parameters<NonNullable<ButtonProps["onClick"]>>;
@@ -16,8 +17,7 @@ function ButtonImpl(inProps: ButtonProps, ref: ButtonRef) {
   const emit = useEmitUIEvent();
   const theme = useTheme();
   const { onClick, ...props } = inProps;
-  const themeDefaultOnClick = theme.components?.MuiButton?.defaultProps?.onClick as ButtonProps["onClick"] | undefined;
-  const resolvedOnClick = onClick ?? themeDefaultOnClick;
+  const resolvedOnClick = resolveThemeDefaultHandler<ButtonProps["onClick"]>(theme, "MuiButton", "onClick", onClick);
 
   return (
     <MuiButton

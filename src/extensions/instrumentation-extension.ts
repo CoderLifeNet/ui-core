@@ -1,15 +1,24 @@
 import type { AnalyticsRuntime } from "../analytics/types.js";
 import type { UIExtension } from "./types.js";
 
-export function createAnalyticsExtension(runtime: AnalyticsRuntime): UIExtension {
+export interface CreateAnalyticsExtensionOptions {
+  disposeRuntimeOnCleanup?: boolean;
+}
+
+export function createAnalyticsExtension(
+  runtime: AnalyticsRuntime,
+  options: CreateAnalyticsExtensionOptions = {}
+): UIExtension {
   return {
     id: "analytics-runtime",
     category: "instrumentation",
-    onEvent: (event) => {
-      runtime.dispatch(event);
+    onEvent: (event, context) => {
+      runtime.dispatch(event, context);
     },
     dispose: () => {
-      runtime.dispose();
+      if (options.disposeRuntimeOnCleanup) {
+        runtime.dispose();
+      }
     }
   };
 }

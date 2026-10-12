@@ -4,7 +4,7 @@ import type { SyntheticEvent } from "react";
 import type { EmitUIEventInput } from "./emit.js";
 
 export type EventHandler<TArgs extends unknown[]> = (...args: TArgs) => void;
-const DEDUPE_KEY = "__coderlife_ui_dedupe";
+const dedupeRegistry = new WeakMap<object, Set<string>>();
 
 export interface ComposeHandlerOptions<TArgs extends unknown[]> {
   userHandler?: EventHandler<TArgs> | undefined;
@@ -35,9 +35,8 @@ function markAndCheckDuplicate(input: unknown, dedupeKey: string): boolean {
     return false;
   }
 
-  const value = nativeEvent[DEDUPE_KEY];
-  const seen = value instanceof Set ? value : new Set<string>();
-  nativeEvent[DEDUPE_KEY] = seen;
+  const seen = dedupeRegistry.get(nativeEvent) ?? new Set<string>();
+  dedupeRegistry.set(nativeEvent, seen);
 
   if (seen.has(dedupeKey)) {
     return true;

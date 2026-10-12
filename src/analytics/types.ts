@@ -1,4 +1,5 @@
 import type { UIEvent } from "../extensions/types.js";
+import type { ExtensionDispatchContext } from "../extensions/types.js";
 
 export type ConsentStatus = "granted" | "denied";
 
@@ -10,6 +11,10 @@ export interface AnalyticsConsent {
 export interface AnalyticsAdapterConfig {
   enabled: boolean;
   sampleRate: number;
+}
+
+export interface AnalyticsDispatchContext extends ExtensionDispatchContext {
+  consent: AnalyticsConsent;
 }
 
 export interface AnalyticsDispatchConfig {
@@ -26,13 +31,13 @@ export interface AnalyticsDispatchConfig {
 export interface AnalyticsAdapter {
   id: string;
   kind: "ga4" | "adobe" | "meta-pixel" | "custom" | "memory";
-  configure?: (config: AnalyticsAdapterConfig) => void;
-  onEvent: (event: UIEvent) => void | Promise<void>;
+  configure?: (config: AnalyticsAdapterConfig, context?: AnalyticsDispatchContext) => void | Promise<void>;
+  onEvent: (event: UIEvent, context?: AnalyticsDispatchContext) => void | Promise<void>;
   dispose?: () => void;
 }
 
 export interface AnalyticsRuntime {
   update: (next: Partial<AnalyticsDispatchConfig>) => void;
-  dispatch: (event: UIEvent) => void;
+  dispatch: (event: UIEvent, context?: Partial<ExtensionDispatchContext>) => void;
   dispose: () => void;
 }

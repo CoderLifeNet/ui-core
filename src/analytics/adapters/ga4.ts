@@ -21,15 +21,17 @@ export function createGA4Adapter(options: GA4AdapterOptions): AnalyticsAdapter {
     configure: (next) => {
       adapterConfig = next;
     },
-    onEvent: (event) => {
+    onEvent: (event, context) => {
       if (!adapterConfig.enabled) {
         return;
       }
+      const sanitized = sanitizeMetadata(event.metadata, ["component", "action", "semantic_id", "tracking_path"]);
       options.client("event", options.mapEventName?.(event) ?? event.type, {
         component: event.component,
         action: event.action,
         semantic_id: event.semanticId,
-        ...sanitizeMetadata(event.metadata)
+        tracking_path: context?.trackingPath.join("/") ?? "",
+        ...sanitized
       });
     }
   };

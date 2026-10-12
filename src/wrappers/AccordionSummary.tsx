@@ -4,9 +4,11 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithRef } from "react";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import type { AccordionSummaryProps } from "@mui/material/AccordionSummary";
+import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
 import { useEmitUIEvent } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
+import { resolveThemeDefaultHandler } from "./resolve-theme-default-handler.js";
 
 type AccordionSummaryRef = ComponentPropsWithRef<typeof MuiAccordionSummary>["ref"];
 type AccordionSummaryClickArgs = Parameters<NonNullable<AccordionSummaryProps["onClick"]>>;
@@ -16,14 +18,21 @@ function AccordionSummaryImpl(
   ref: AccordionSummaryRef
 ) {
   const emit = useEmitUIEvent();
+  const theme = useTheme();
   const { onClick, ...props } = inProps;
+  const resolvedOnClick = resolveThemeDefaultHandler<AccordionSummaryProps["onClick"]>(
+    theme,
+    "MuiAccordionSummary",
+    "onClick",
+    onClick
+  );
 
   return (
     <MuiAccordionSummary
       {...props}
       ref={ref}
       onClick={composeHandler<AccordionSummaryClickArgs>({
-        userHandler: onClick,
+        userHandler: resolvedOnClick,
         emit,
         dedupeKey: "click:AccordionSummary",
         eventFactory: () => ({

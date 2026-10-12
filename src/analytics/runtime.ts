@@ -1,8 +1,9 @@
 import type { UIEvent } from "../extensions/types.js";
+import type { ExtensionDispatchContext } from "../extensions/types.js";
 import type {
   AnalyticsAdapter,
-  AnalyticsAdapterConfig,
   AnalyticsConsent,
+  AnalyticsDispatchContext,
   AnalyticsDispatchConfig,
   AnalyticsRuntime
 } from "./types.js";
@@ -47,11 +48,26 @@ export function createAnalyticsRuntime(
     ...initialConfig
   };
 
+  const buildDispatchContext = (context?: Partial<ExtensionDispatchContext>): AnalyticsDispatchContext => ({
+    trackingPath: context?.trackingPath ?? [],
+    optedOut: context?.optedOut ?? false,
+    consent: config.consent
+  });
+
   const applyAdapterConfig = (): void => {
+    const dispatchContext = buildDispatchContext();
     for (const adapter of adapters) {
       const enabled = config.adapterEnabled?.[adapter.id] ?? config.enabled;
       const sampleRate = clampSampleRate(config.adapterSampleRate?.[adapter.id] ?? config.defaultSampleRate ?? 1);
-      adapter.configure?.({ enabled, sampleRate });
+
+      try {
+        const result = adapter.configure?.({ enabled, sampleRate }, dispatchContext);
+        if (result && typeof (result as Promise<void>).catch === "function") {
+          (result as Promise<void>).catch(() => undefined);
+        }
+      } catch {
+        // Configure failures must not escape the runtime.
+      }
     }
   };
 
@@ -69,7 +85,12 @@ export function createAnalyticsRuntime(
       };
       applyAdapterConfig();
     },
-    dispatch: (event) => {
+    dispatch: (event, context) => {
+      const dispatchContext = buildDispatchContext(context);
+
+      if (dispatchContext.optedOut) {
+        return;
+      }
       if (!config.enabled) {
         return;
       }
@@ -83,11 +104,18 @@ export function createAnalyticsRuntime(
         return;
       }
       for (const adapter of adapters) {
+        const adapterEnabled = config.adapterEnabled?.[adapter.id] ?? config.enabled;
+        if (!adapterEnabled) {
+          continue;
+        }
+        if (adapter.kind === "meta-pixel" && config.consent.adStorage !== "granted") {
+          continue;
+        }
         if (!shouldSample(clampSampleRate(config.adapterSampleRate?.[adapter.id] ?? config.defaultSampleRate ?? 1))) {
           continue;
         }
         try {
-          const result = adapter.onEvent(event);
+          const result = adapter.onEvent(event, dispatchContext);
           if (result && typeof (result as Promise<void>).catch === "function") {
             (result as Promise<void>).catch(() => undefined);
           }
@@ -108,13 +136,21 @@ export function createAnalyticsRuntime(
   };
 }
 
-export function sanitizeMetadata(metadata: UIEvent["metadata"]): Record<string, string | number | boolean | null> {
+export function sanitizeMetadata(
+  metadata: UIEvent["metadata"],
+  reservedKeys: readonly string[] = []
+): Record<string, string | number | boolean | null> {
   if (!metadata) {
     return {};
   }
 
+  const reserved = new Set(reservedKeys);
+
   const output: Record<string, string | number | boolean | null> = {};
   for (const [key, value] of Object.entries(metadata)) {
+    if (reserved.has(key)) {
+      continue;
+    }
     if (typeof value === "string" || typeof value === "number" || typeof value === "boolean" || value === null) {
       output[key] = value;
     }

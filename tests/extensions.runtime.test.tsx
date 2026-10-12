@@ -67,4 +67,81 @@ describe("UIExtensionsProvider", () => {
     expect(event.schemaVersion).toBe("1.0.0");
     expect(context.trackingPath).toEqual(["root"]);
   });
+
+  it("replaces prop extensions and disposes removed registrations", () => {
+    const firstListener = vi.fn();
+    const secondListener = vi.fn();
+    const firstDispose = vi.fn();
+    const secondDispose = vi.fn();
+    let emit: ReturnType<typeof useUIExtensions>["emit"] | undefined;
+
+    const { rerender } = render(
+      <UIExtensionsProvider
+        initialConfig={{ enabled: true }}
+        extensions={[
+          {
+            id: "replacement",
+            category: "instrumentation",
+            onEvent: firstListener,
+            dispose: firstDispose
+          }
+        ]}
+      >
+        <Harness onReady={(next) => (emit = next)} />
+      </UIExtensionsProvider>
+    );
+
+    rerender(
+      <UIExtensionsProvider
+        initialConfig={{ enabled: true }}
+        extensions={[
+          {
+            id: "replacement",
+            category: "instrumentation",
+            onEvent: secondListener,
+            dispose: secondDispose
+          }
+        ]}
+      >
+        <Harness onReady={(next) => (emit = next)} />
+      </UIExtensionsProvider>
+    );
+
+    act(() => {
+      emit?.({ type: "ui.click", action: "click", component: "Button" });
+    });
+
+    expect(firstDispose).toHaveBeenCalledTimes(1);
+    expect(firstListener).not.toHaveBeenCalled();
+    expect(secondListener).toHaveBeenCalledTimes(1);
+  });
+
+  it("guards against stale unregister callbacks", () => {
+    const first = vi.fn();
+    const second = vi.fn();
+    let api: ReturnType<typeof useUIExtensions> | undefined;
+
+    function RegisterHarness({ onReady }: { onReady: (value: ReturnType<typeof useUIExtensions>) => void }) {
+      const extensions = useUIExtensions();
+      onReady(extensions);
+      return null;
+    }
+
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }}>
+        <RegisterHarness onReady={(value) => (api = value)} />
+      </UIExtensionsProvider>
+    );
+
+    const unregisterFirst = api?.register({ id: "dynamic", category: "custom", onEvent: first });
+    api?.register({ id: "dynamic", category: "custom", onEvent: second });
+    unregisterFirst?.();
+
+    act(() => {
+      api?.emit({ type: "ui.click", action: "click", component: "Button" });
+    });
+
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledTimes(1);
+  });
 });

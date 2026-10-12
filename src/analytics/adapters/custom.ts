@@ -1,9 +1,9 @@
 import type { UIEvent } from "../../extensions/types.js";
-import type { AnalyticsAdapter, AnalyticsAdapterConfig } from "../types.js";
+import type { AnalyticsAdapter, AnalyticsAdapterConfig, AnalyticsDispatchContext } from "../types.js";
 
 export interface CustomAdapterOptions {
   id: string;
-  onEvent: (event: UIEvent) => void | Promise<void>;
+  onEvent: (event: UIEvent, context?: AnalyticsDispatchContext) => void | Promise<void>;
 }
 
 export function createCustomAdapter(options: CustomAdapterOptions): AnalyticsAdapter {
@@ -18,11 +18,11 @@ export function createCustomAdapter(options: CustomAdapterOptions): AnalyticsAda
     configure: (next) => {
       adapterConfig = next;
     },
-    onEvent: (event) => {
+    onEvent: (event, context) => {
       if (!adapterConfig.enabled) {
         return;
       }
-      return options.onEvent(event);
+      return options.onEvent(event, context);
     }
   };
 }

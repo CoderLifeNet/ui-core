@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useRef } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import type {
   ExtensionDispatchContext,
   UIEvent,
@@ -16,6 +16,12 @@ const DEFAULT_CONFIG: UIExtensionsConfig = {
 };
 
 const UIExtensionsContext = createContext<UIExtensionsContextValue | null>(null);
+
+interface RegisteredExtension {
+  source: "prop" | "runtime";
+  registrationId: number;
+  extension: UIExtension;
+}
 
 function safeInvoke(extension: UIExtension, event: UIEvent, context: ExtensionDispatchContext): void {
   try {
@@ -33,23 +39,83 @@ export function UIExtensionsProvider({
   extensions = [],
   initialConfig
 }: UIExtensionsProviderProps) {
-  const extensionMapRef = useRef<Map<string, UIExtension>>(new Map());
+  const extensionMapRef = useRef<Map<string, RegisteredExtension>>(new Map());
+  const registrationCounterRef = useRef(0);
+  const previousPropExtensionIdsRef = useRef<Set<string>>(new Set());
   const configRef = useRef<UIExtensionsConfig>({
     ...DEFAULT_CONFIG,
     ...initialConfig
   });
 
-  if (extensionMapRef.current.size === 0 && extensions.length > 0) {
-    for (const extension of extensions) {
-      extensionMapRef.current.set(extension.id, extension);
+  const safelyDispose = (extension: UIExtension): void => {
+    try {
+      const result = extension.dispose?.();
+      if (result && typeof (result as Promise<void>).catch === "function") {
+        (result as Promise<void>).catch(() => undefined);
+      }
+    } catch {
+      // Disposal failures must not break host cleanup.
     }
-  }
+  };
+
+  const upsert = (entry: RegisteredExtension): void => {
+    const existing = extensionMapRef.current.get(entry.extension.id);
+    if (
+      existing &&
+      (existing.registrationId !== entry.registrationId ||
+        existing.source !== entry.source ||
+        existing.extension !== entry.extension)
+    ) {
+      safelyDispose(existing.extension);
+    }
+    extensionMapRef.current.set(entry.extension.id, entry);
+  };
+
+  useEffect(() => {
+    const nextIds = new Set<string>();
+
+    for (const extension of extensions) {
+      nextIds.add(extension.id);
+      upsert({
+        extension,
+        registrationId: -1,
+        source: "prop"
+      });
+    }
+
+    for (const previousId of previousPropExtensionIdsRef.current) {
+      if (nextIds.has(previousId)) {
+        continue;
+      }
+      const existing = extensionMapRef.current.get(previousId);
+      if (existing?.source === "prop") {
+        safelyDispose(existing.extension);
+        extensionMapRef.current.delete(previousId);
+      }
+    }
+
+    previousPropExtensionIdsRef.current = nextIds;
+  }, [extensions]);
+
+  useEffect(
+    () => () => {
+      for (const registered of extensionMapRef.current.values()) {
+        safelyDispose(registered.extension);
+      }
+      extensionMapRef.current.clear();
+    },
+    []
+  );
 
   const api = useMemo<UIExtensionsContextValue>(
     () => ({
       emit: (inputEvent, context = {}) => {
         const currentConfig = configRef.current;
         if (!currentConfig.enabled) {
+          return;
+        }
+
+        if (context.optedOut) {
           return;
         }
 
@@ -64,14 +130,24 @@ export function UIExtensionsProvider({
           optedOut: context.optedOut ?? false
         };
 
-        for (const extension of extensionMapRef.current.values()) {
-          safeInvoke(extension, event, dispatchContext);
+        for (const registered of extensionMapRef.current.values()) {
+          safeInvoke(registered.extension, event, dispatchContext);
         }
       },
       register: (extension) => {
-        extensionMapRef.current.set(extension.id, extension);
+        const registrationId = ++registrationCounterRef.current;
+        upsert({
+          extension,
+          registrationId,
+          source: "runtime"
+        });
+
         return () => {
-          extension.dispose?.();
+          const current = extensionMapRef.current.get(extension.id);
+          if (!current || current.registrationId !== registrationId || current.source !== "runtime") {
+            return;
+          }
+          safelyDispose(current.extension);
           extensionMapRef.current.delete(extension.id);
         };
       },
