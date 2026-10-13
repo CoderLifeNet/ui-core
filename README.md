@@ -98,7 +98,9 @@ Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Swit
 
 - `@coderlifenet/ui-core@0.2.0-alpha.0` is published on npm.
 - Dist-tags currently resolve to `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- `@coderlifenet/ui-components@0.2.0-alpha.0` remains unreleased during this documentation update.
+- `@coderlifenet/ui-components@0.2.0-alpha.0` is published with npm attestation-backed provenance.
+
+Use exact versions for coordinated installs (`@coderlifenet/ui-core@0.2.0-alpha.0` + `@coderlifenet/ui-components@0.2.0-alpha.0`) and do not rely on `latest`.
 
 For source-review runs, identify local release bytes by source commit plus `pnpm pack:local` hash output.
 

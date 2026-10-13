@@ -4,8 +4,8 @@
 
 - `@coderlifenet/ui-core@0.2.0-alpha.0` is published.
 - Dist-tags for core: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- `@coderlifenet/ui-components@0.1.0-alpha.2` is the currently published components package.
-- `@coderlifenet/ui-components@0.2.0-alpha.0` is still pending publication.
+- `@coderlifenet/ui-components@0.2.0-alpha.0` is published.
+- Dist-tags for components: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
 
 Published historical closeout below remains valid evidence for the first public alpha publication sequence.
 
@@ -35,15 +35,14 @@ dependencies passed npm 11.11.1 `audit signatures`: 90 registry signatures and
 24 attestations verified. No local tarball overrides were used.
 See [components' closeout and reproducible checks](https://github.com/CoderLifeNet/ui-components/blob/main/docs/RELEASING.md).
 
-Tag exception: both packages currently have `alpha` AND `latest` pointing to
-`0.1.0-alpha.2`. Core's `latest` was unchanged during components publication and
-closeout, but was absent before core's first publication. Components' `latest`
-was absent before its first publication and appeared afterwards. Therefore the
-original latest-absent/unchanged acceptance criterion was NOT met. The workflow
-explicitly requested `--tag alpha`; the cause of the extra tag is not established.
-The prior attempt to remove core's `latest` returned npm E403. No tags were changed
-during closeout. A scope-authorized maintainer must resolve this tag-policy exception
-without republishing or unpublishing either version.
+Historical tag exception at the 2026-09-11 closeout checkpoint: both packages had
+`alpha` AND `latest` pointing to `0.1.0-alpha.2`. Core's `latest` was unchanged
+during components publication and closeout, but was absent before core's first
+publication. Components' `latest` was absent before its first publication and
+appeared afterwards. Therefore the original latest-absent/unchanged acceptance
+criterion was NOT met. The workflow explicitly requested `--tag alpha`; the cause
+of the extra tag was not established. The prior attempt to remove core's `latest`
+returned npm E403. No tags were changed during that closeout.
 
 The verified published-source SHA above is immutable release evidence, not the
 subsequent closeout documentation commit. External release reports/tarballs and the
@@ -174,11 +173,11 @@ publish job downloads that same artifact, verifies its source and hashes, checks
 version availability again, and publishes only with `--access public --tag alpha
 --provenance`. Never dispatch publication as part of preparation.
 
-Then verify `npm view @coderlifenet/ui-core@0.1.0-alpha.2 version dist.integrity
+Then verify `npm view @coderlifenet/ui-core@<target-version> version dist.integrity
 dist.attestations repository --json` and `npm view @coderlifenet/ui-core dist-tags
---json`. Compare integrity to the approved run's report; alpha must point at
-0.1.0-alpha.2 and latest must remain absent/unchanged. Only then release components.
-Follow the components registry consumer checks after both packages are public.
+--json`. Compare integrity to the approved run's report; verify `alpha` points to
+the intended target version and do not assume `latest` changes. For the currently
+coordinated pair, target `0.2.0-alpha.0` on both packages.
 
 ## Official references
 

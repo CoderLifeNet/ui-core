@@ -5,7 +5,7 @@ Date: 2026-09-08
 ## Current npm snapshot (2026-10-12)
 
 - `@coderlifenet/ui-core`: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- `@coderlifenet/ui-components`: `alpha -> 0.1.0-alpha.2`, `latest -> 0.1.0-alpha.2`.
+- `@coderlifenet/ui-components`: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
 - Historical `alpha.2` references below remain closeout evidence for that release window.
 
 ## Scope
