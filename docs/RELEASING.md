@@ -1,8 +1,13 @@
 # Public alpha release
 
-Published: `@coderlifenet/ui-core@0.1.0-alpha.2`, public, with `alpha` pointing to
-this version. See the tag exception below. Pushes, tags, CI and prepare mode do
-not publish packages. Never republish this existing version.
+## Current npm-verified versions (2026-10-12 UTC)
+
+- `@coderlifenet/ui-core@0.2.0-alpha.0` is published.
+- Dist-tags for core: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
+- `@coderlifenet/ui-components@0.1.0-alpha.2` is the currently published components package.
+- `@coderlifenet/ui-components@0.2.0-alpha.0` is still pending publication.
+
+Published historical closeout below remains valid evidence for the first public alpha publication sequence.
 
 ## Verified release closeout (2026-09-11 UTC)
 
