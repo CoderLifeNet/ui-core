@@ -251,7 +251,7 @@ export function AnalyticsDemo() {
 
 ## Coverage And Limitations
 
-- `AccordionSummary` emits `ui.accordion.toggle` (action `toggle`, component `AccordionSummary`) for compatibility with published `0.1.0-alpha.2` behavior.
+- `AccordionSummary` emits `ui.accordion.toggle` (action `toggle`, component `AccordionSummary`) for compatibility with published `0.2.0-alpha.0` behavior.
 - `TextField select={true}` emits logical select events (`ui.select.change`, `ui.select.focus`, `ui.select.blur`) via public imports.
 - `Autocomplete` emits `ui.autocomplete.change` by default; focus/blur are available and default-disabled unless selected by scope.
 - For `Autocomplete` composites rendered through `renderInput`, focus/blur ownership belongs to `Autocomplete` to avoid duplicate logical events from the wrapped `TextField` input.
@@ -260,4 +260,4 @@ export function AnalyticsDemo() {
 - `Select`, `Checkbox`, `Radio`, and `Switch` include focus/blur events that are default-disabled unless selected by scope.
 - `Autocomplete` typing remains a separate action path from option selection: option selection emits `ui.autocomplete.change`, while standalone field typing continues to map to `ui.text_field.change` where enabled.
 - No default event payloads include entered text, selected labels/contents, file names, DOM text, URLs, or business identifiers.
-- These APIs are candidate branch behavior and are not published on npm `0.1.0-alpha.2`.
+- These APIs are published in `@coderlifenet/ui-core@0.2.0-alpha.0`.

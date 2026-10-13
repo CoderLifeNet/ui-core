@@ -1,8 +1,13 @@
 # Public alpha release
 
-Published: `@coderlifenet/ui-core@0.1.0-alpha.2`, public, with `alpha` pointing to
-this version. See the tag exception below. Pushes, tags, CI and prepare mode do
-not publish packages. Never republish this existing version.
+## Current npm-verified versions (2026-10-13 UTC)
+
+- `@coderlifenet/ui-core@0.2.0-alpha.0` is published.
+- Dist-tags for core: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
+- `@coderlifenet/ui-components@0.2.0-alpha.0` is published.
+- Dist-tags for components: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
+
+Published historical closeout below remains valid evidence for the first public alpha publication sequence.
 
 ## Verified release closeout (2026-09-11 UTC)
 
@@ -30,51 +35,44 @@ dependencies passed npm 11.11.1 `audit signatures`: 90 registry signatures and
 24 attestations verified. No local tarball overrides were used.
 See [components' closeout and reproducible checks](https://github.com/CoderLifeNet/ui-components/blob/main/docs/RELEASING.md).
 
-Tag exception: both packages currently have `alpha` AND `latest` pointing to
-`0.1.0-alpha.2`. Core's `latest` was unchanged during components publication and
-closeout, but was absent before core's first publication. Components' `latest`
-was absent before its first publication and appeared afterwards. Therefore the
-original latest-absent/unchanged acceptance criterion was NOT met. The workflow
-explicitly requested `--tag alpha`; the cause of the extra tag is not established.
-The prior attempt to remove core's `latest` returned npm E403. No tags were changed
-during closeout. A scope-authorized maintainer must resolve this tag-policy exception
-without republishing or unpublishing either version.
+Historical tag exception at the 2026-09-11 closeout checkpoint: both packages had
+`alpha` AND `latest` pointing to `0.1.0-alpha.2`. Core's `latest` was unchanged
+during components publication and closeout, but was absent before core's first
+publication. Components' `latest` was absent before its first publication and
+appeared afterwards. Therefore the original latest-absent/unchanged acceptance
+criterion was NOT met. The workflow explicitly requested `--tag alpha`; the cause
+of the extra tag was not established. The prior attempt to remove core's `latest`
+returned npm E403. No tags were changed during that closeout.
 
 The verified published-source SHA above is immutable release evidence, not the
 subsequent closeout documentation commit. External release reports/tarballs and the
 history backup were retained; the backup SHA256 remains
 `7a3082eb2ee42cfe31d3fe6bb4bef91d448fa15dbaf56c592bc5dbcae2ae7b74`.
 
-## Trusted publishing handoff
+## Verified trusted publishing (2026-10-13 UTC)
 
-Neither package's npm trusted-publisher configuration has been verified. Successful
-bootstrap publication and valid OIDC-backed provenance do NOT prove tokenless npm
-publishing is configured. Official npm guidance was rechecked on 2026-09-11 UTC.
+Both packages published `0.2.0-alpha.0` through the protected `publish-oidc`
+workflow with no npm bootstrap token. The [core publication run](https://github.com/CoderLifeNet/ui-core/actions/runs/38251466924)
+and [components publication run](https://github.com/CoderLifeNet/ui-components/actions/runs/38278775388)
+provide the successful OIDC release evidence. Each used the `npm-alpha`
+approval gate, main SHA and provenance checks. The current `alpha` dist-tags
+point to `0.2.0-alpha.0`; `latest` still points to the historical
+`0.1.0-alpha.2`. Pin exact versions in new consumers.
 
-1. In each npm package's Settings > Trusted publishing, add GitHub Actions:
-  organization `CoderLifeNet`; repository `ui-core` for core or `ui-components`
-  for components; workflow filename `publish.yml` (not a path); environment
-  `npm-alpha`. Explicitly allow direct `npm publish`, not only `npm stage publish`.
-2. Verify the saved, case-sensitive fields for BOTH packages. Keep GitHub-hosted
-  runners, `id-token: write`, main-only deployments, required maintainer review,
-  administrator bypass disabled, artifact verification and provenance unchanged.
-  Node 22.22.3/npm 11.11.1 satisfy npm's OIDC minimum versions.
-3. For the next separately authorized NEW version, dispatch `publish-oidc`, which
-  supplies no bootstrap token. Verify that protected publication and its registry
-  evidence succeed. npm does not validate trust fields on save; dry-run and
-  `npm whoami` do not prove OIDC works. Do not republish alpha.2 to test trust.
-4. Both publications and consumer/signature checks are now verified, but the tag
-  exception and trust setup remain. For a no-interruption transition, resolve the
-  tag disposition and verify both trusted publishers work before removing BOTH
-  GitHub `npm-alpha` environment secrets `NPM_BOOTSTRAP_TOKEN` and revoking the
-  corresponding granular token(s) in npm. Do not extend a short-lived token just
-  for a future test; it may be revoked sooner once setup is reviewed if the owner
-  accepts that tokenless publishing remains unproven until the next release.
-  After trust is verified, npm recommends Publishing access > Require two-factor
-  authentication and disallow tokens. This does not disable OIDC publishing.
+For later versions, keep the trusted-publisher fields matched to each package:
+organization `CoderLifeNet`, repository `ui-core` or `ui-components`,
+workflow filename `publish.yml`, environment `npm-alpha`, and permission for
+direct `npm publish`. Preserve hosted runners, `id-token: write`, main-only
+deployment, required maintainer review, artifact verification and provenance.
 
-No secrets were read, replaced, removed or revoked during closeout. Both protected
-environments still require `chrishacia` review, main only, with admin bypass disabled.
+Bootstrap credentials were used for the historical first publication. Their
+present secret/token state has not been independently checked in this docs
+update. The owner can inspect and retire any remaining `NPM_BOOTSTRAP_TOKEN`
+environment secrets and corresponding npm granular token after confirming no
+other workflow depends on them; do not disclose token values. OIDC publication
+has already been proved on both packages, so a bootstrap token is not required
+for the next release. The historical `latest` tag exception remains a separate
+tag-policy decision; do not silently change either tag.
 
 ## Access prerequisite
 
@@ -118,62 +116,43 @@ Review this report before publication; local and CI tarball hashes can differ.
 
 ## Authentication and approval
 
-The workflow uses pinned action commits, Node 22.22.3 and npm 11.11.1 (OIDC requires
-Node >=22.14 and npm >=11.5.1). Validation has read-only contents permission and
-no publishing credential. Only the separately approved `npm-alpha` environment
-job has `id-token: write`. Configure that environment with main-only deployment
-branches, a required maintainer reviewer, and administrator bypass disabled.
+The workflow uses pinned action commits, Node 22.22.3 and npm 11.11.1. Validation
+has read-only contents permission and no publishing credential. The separately
+approved `npm-alpha` job has `id-token: write`. Keep main-only deployment,
+required maintainer review and administrator bypass disabled.
 
-Preferred mode is `publish-oidc`: in npm package settings add a GitHub trusted
-publisher with organization `CoderLifeNet`, repository `ui-core`, workflow
-`publish.yml`, environment `npm-alpha`, allowing direct `npm publish`.
-No npm token is supplied in this mode. The public repository URL matches provenance.
+Use `publish-oidc` for a newly approved, unpublished version after strict
+prepare and artifact review. The trusted publishers for both packages are
+verified by the successful `0.2.0-alpha.0` OIDC runs linked above. This mode
+supplies no npm token. Do not republish an existing version to test trust.
 
-Trusted-publisher configuration is attached to an existing npm package. For a
-first package without accessible settings, use `publish-bootstrap` once: an npm
-scope-authorized maintainer creates a short-lived granular token with package/scope
-read-write access limited to `@coderlifenet` and bypass 2FA for CI publishing. Organization
-management access alone does not grant package publishing. Enter it directly into
-the GitHub `npm-alpha` environment secret `NPM_BOOTSTRAP_TOKEN`, never into chat.
-The bootstrap job still uses GitHub OIDC for provenance. After BOTH packages publish,
-configure and verify their trusted publishers, delete the environment tokens and
-revoke the bootstrap token in npm.
-Do not publish a placeholder package to establish trust.
-
-Official npm guidance rechecked on 2026-09-10 still explicitly supports granular
-tokens with bypass 2FA for direct publication. This does not bypass interactive
-2FA for account-identity/governance actions (changed August 2026) or staged-package
-approval. In npm account Access Tokens, choose a short expiration, Packages and
-scopes: Read and write, only `@coderlifenet`, and Bypass two-factor authentication.
-Organization-management permissions are not needed. Store the token directly in
-each repository's Settings > Environments > npm-alpha > NPM_BOOTSTRAP_TOKEN.
-Both environment secrets were present for bootstrap publication and remain retained.
-Enable account 2FA and complete
-any account-management challenges directly on npm. If npm does not offer these
-documented settings for this account, stop and resolve with npm; do not weaken gates.
-The prepared workflow performs direct publication, not staged publication. New
-trusted publishers must explicitly allow `npm publish`, not only `npm stage publish`.
+`publish-bootstrap` describes the historical first-publication path and is
+not the current release path. Do not create or extend a granular token for
+routine releases. Confirm and retire any remaining bootstrap secrets/tokens as
+described above without weakening the protected environment.
 
 ## Manual release and smoke checks
 
-After separate publication approval and access setup, run:
+For a separately approved new version after a successful prepare run, dispatch
+the exact full main SHA with `publish-oidc`:
 
 ```sh
-gh workflow run publish.yml --repo CoderLifeNet/ui-core --ref main \
-  -f expected_sha=<approved-full-main-sha> -f mode=publish-bootstrap
+gh workflow run publish.yml --repo CoderLifeNet/ui-core --ref main \\
+  -f expected_sha=<approved-full-main-sha> -f mode=publish-oidc
 ```
 
-Use `publish-oidc` instead when trusted publishing is configured. Review the fresh
-validation artifact and approve the waiting `npm-alpha` environment job. The
-publish job downloads that same artifact, verifies its source and hashes, checks
-version availability again, and publishes only with `--access public --tag alpha
---provenance`. Never dispatch publication as part of preparation.
+Review the fresh validation artifact and approve the waiting `npm-alpha`
+environment job. The publish job downloads that same artifact, verifies its
+source and hashes, checks version availability again, and publishes only with
+`--access public --tag alpha --provenance`. Never dispatch publication as part
+of preparation.
 
-Then verify `npm view @coderlifenet/ui-core@0.1.0-alpha.2 version dist.integrity
-dist.attestations repository --json` and `npm view @coderlifenet/ui-core dist-tags
---json`. Compare integrity to the approved run's report; alpha must point at
-0.1.0-alpha.2 and latest must remain absent/unchanged. Only then release components.
-Follow the components registry consumer checks after both packages are public.
+Then verify `npm view @coderlifenet/ui-core@<target-version> version
+dist.integrity dist.attestations repository --json` and
+`npm view @coderlifenet/ui-core dist-tags --json`. Compare integrity to the
+approved run's report; verify `alpha` points to the intended target and do not
+assume `latest` changes. `0.2.0-alpha.0` is already published and must not be
+dispatched again.
 
 ## Official references
 
