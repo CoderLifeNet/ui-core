@@ -46,6 +46,10 @@ async function checkBrowser(browser, { command, args, port, ssr }) {
       exited.then(([code, signal]) => { throw new Error(`Consumer server exited: ${code ?? signal}`); })
     ]);
     if (ssr) {
+      const bodyStart = html.indexOf("</head>");
+      const emotionStyle = /<style\b[^>]*\bdata-emotion=/;
+      assert.match(html.slice(0, bodyStart), emotionStyle, "Expected server-rendered Emotion styles in the head");
+      assert.doesNotMatch(html.slice(bodyStart), emotionStyle, "Emotion styles must not be rendered in the body");
       assert.match(html, /<h1>Packed ui-core consumer<\/h1>/);
       assert.match(html, /<input\b[^>]*\bdata-consumer-slot="true"/);
       assert.match(html, />Server root button<\/button>/);
