@@ -12,6 +12,10 @@
       "types": "./dist/analytics/index.d.ts",
       "default": "./dist/analytics/index.js"
     },
+    "./accessibility": {
+      "types": "./dist/accessibility/index.d.ts",
+      "default": "./dist/accessibility/index.js"
+    },
     "./instrumentation": {
       "types": "./dist/instrumentation/index.d.ts",
       "default": "./dist/instrumentation/index.js"
@@ -562,6 +566,10 @@
     "./Typography": {
       "types": "./dist/material/Typography.d.ts",
       "default": "./dist/material/Typography.js"
+    },
+    "./Unstable_TrapFocus": {
+      "types": "./dist/material/Unstable_TrapFocus.d.ts",
+      "default": "./dist/material/Unstable_TrapFocus.js"
     },
     "./Zoom": {
       "types": "./dist/material/Zoom.d.ts",

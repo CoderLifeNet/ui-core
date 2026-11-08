@@ -94,7 +94,9 @@ const root = outputByName["root-button"];
 const subpath = outputByName["subpath-button"];
 
 const forbiddenPathMatchers = [
-  /(^|\/)dist\/analytics\/adapters\//,
+  /(^|\/)dist\/analytics\//,
+  /(^|\/)dist\/accessibility\//,
+  /(^|\/)dom-accessibility-api\//,
   /(^|\/)dist\/icons\//,
   /(^|\/)dist\/wrappers\/(AccordionSummary|Autocomplete|Checkbox|IconButton|Link|MenuItem|Pagination|Radio|Select|Slider|Switch|Tab|Tabs)\./,
   /(^|\/)dist\/material\/(Accordion|Autocomplete|Checkbox|Dialog|Drawer|Menu|Pagination|Radio|Select|Slider|Switch|Tab|Tabs)\./

@@ -42,23 +42,27 @@ function sanitizeMetadata(metadata: Record<string, unknown> | undefined) {
   return Object.keys(output).length > 0 ? output : undefined;
 }
 
-export function useEmitUIEvent(): (input: EmitUIEventInput) => void {
+export function useOptionalUIEventEmitter(): ((input: EmitUIEventInput) => void) | undefined {
   const extensions = useOptionalUIExtensions();
   const tracking = useTrackingBoundaryContext();
 
+  if (!extensions) {
+    return undefined;
+  }
+
   return (input) => {
-    if (!extensions) {
-      return;
-    }
     if (tracking.optedOut) {
+      extensions.reportBlocked?.(input, "scope_opt_out");
       return;
     }
 
     if (tracking.hasEventSelection) {
       if (!tracking.eventSelection?.has(input.type)) {
+        extensions.reportBlocked?.(input, "scope_event_filter");
         return;
       }
     } else if (!isDefaultEnabledEventType(input.type)) {
+      extensions.reportBlocked?.(input, "event_disabled_by_default");
       return;
     }
 
@@ -84,4 +88,10 @@ export function useEmitUIEvent(): (input: EmitUIEventInput) => void {
       { trackingPath: tracking.trackingPath, optedOut: tracking.optedOut }
     );
   };
+}
+
+const noop = () => {};
+
+export function useEmitUIEvent(): (input: EmitUIEventInput) => void {
+  return useOptionalUIEventEmitter() ?? noop;
 }

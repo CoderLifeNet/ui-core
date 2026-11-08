@@ -41,6 +41,32 @@ const WRAPPED_SUBPATHS = [
   "Tabs"
 ];
 
+async function checkRuntimeParity(
+  subpath: string,
+  wrappers: Readonly<Record<string, unknown>>
+): Promise<boolean> {
+  const suffix = subpath === "." ? "" : subpath.slice(1);
+  let upstream: Record<string, unknown>;
+  try {
+    upstream = await import(`@mui/material${suffix}`);
+  } catch (error) {
+    if (subpath.startsWith("./Pigment") && (error as NodeJS.ErrnoException).code === "ERR_MODULE_NOT_FOUND" &&
+        (error as Error).message.includes("'@mui/material-pigment-css'")) {
+      console.log(`Skipped runtime check for ${subpath} (optional MUI Pigment CSS peer is absent).`);
+      return false;
+    }
+    throw error;
+  }
+  const core = await import(`@coderlifenet/ui-core${suffix}`) as Record<string, unknown>;
+  for (const [name, value] of Object.entries(upstream)) {
+    const expected = Object.hasOwn(wrappers, name) ? wrappers[name] : value;
+    if (!Object.hasOwn(core, name) || core[name] !== expected) {
+      throw new Error(`MUI runtime export drift for ${subpath}:${name}`);
+    }
+  }
+  return true;
+}
+
 async function ensureFileExists(relativePath: string): Promise<void> {
   await access(path.join(repoRoot, relativePath));
 }
@@ -56,6 +82,10 @@ async function main(): Promise<void> {
     entries: Array<{ subpath: string; category: string }>;
   };
 
+  const corePackage = "@coderlifenet/ui-core";
+  const root = await import(corePackage) as Record<string, unknown>;
+  const wrappedValues = Object.fromEntries(WRAPPED_SUBPATHS.map((name) => [name, root[name]]));
+  let checkedRuntime = Number(await checkRuntimeParity(".", wrappedValues));
   for (const entry of surface.entries) {
     if (!ALLOWED_CATEGORIES.has(entry.category)) {
       throw new Error(`Unclassified export category '${entry.category}' for ${entry.subpath}`);
@@ -72,6 +102,11 @@ async function main(): Promise<void> {
 
     await ensureFileExists(exportEntry.types.replace("./", ""));
     await ensureFileExists(exportEntry.default.replace("./", ""));
+    const name = entry.subpath.slice(2);
+    const wrappers = Object.hasOwn(wrappedValues, name)
+      ? { default: wrappedValues[name], [name]: wrappedValues[name] }
+      : {};
+    checkedRuntime += Number(await checkRuntimeParity(entry.subpath, wrappers));
   }
 
   const rootSource = await readFile(path.join(repoRoot, "src", "index.ts"), "utf8");
@@ -88,7 +123,7 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log(`Validated ${surface.entries.length} exports and wrapper routing.`);
+  console.log(`Validated ${surface.entries.length} subpaths, wrapper routing, and ${checkedRuntime} runtime entry points.`);
 }
 
 main().catch((error: unknown) => {

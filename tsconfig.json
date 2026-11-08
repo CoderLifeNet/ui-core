@@ -21,5 +21,6 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "vitest/globals"]
   },
-  "include": ["src", "scripts", "tests", "generated"]
+  "include": ["src", "scripts", "tests", "generated"],
+  "exclude": ["tests/packed-consumer"]
 }

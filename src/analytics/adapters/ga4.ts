@@ -6,7 +6,14 @@ export type GA4Client = (command: "event", eventName: string, params: Record<str
 
 export interface GA4AdapterOptions {
   client: GA4Client;
+  isAvailable?: () => boolean;
   mapEventName?: (event: UIEvent) => string;
+  sendTo?: string | readonly string[];
+}
+
+function defaultEventName(type: string): string {
+  const name = type.replace(/[^a-zA-Z0-9_]/g, "_");
+  return (/^[a-z]/i.test(name) ? name : `ui_${name}`).slice(0, 40);
 }
 
 export function createGA4Adapter(options: GA4AdapterOptions): AnalyticsAdapter {
@@ -18,6 +25,7 @@ export function createGA4Adapter(options: GA4AdapterOptions): AnalyticsAdapter {
   return {
     id: "ga4",
     kind: "ga4",
+    ...(options.isAvailable ? { isAvailable: options.isAvailable } : {}),
     configure: (next) => {
       adapterConfig = next;
     },
@@ -25,13 +33,16 @@ export function createGA4Adapter(options: GA4AdapterOptions): AnalyticsAdapter {
       if (!adapterConfig.enabled) {
         return;
       }
-      const sanitized = sanitizeMetadata(event.metadata, ["component", "action", "semantic_id", "tracking_path"]);
-      options.client("event", options.mapEventName?.(event) ?? event.type, {
+      const sanitized = sanitizeMetadata(event.metadata, [
+        "component", "action", "semantic_id", "tracking_path", "send_to", "event_callback", "event_timeout"
+      ]);
+      options.client("event", options.mapEventName?.(event) ?? defaultEventName(event.type), {
         component: event.component,
         action: event.action,
         semantic_id: event.semanticId,
         tracking_path: context?.trackingPath.join("/") ?? "",
-        ...sanitized
+        ...sanitized,
+        ...(options.sendTo === undefined ? {} : { send_to: options.sendTo })
       });
     }
   };

@@ -22,7 +22,7 @@ async function files(directory: string, prefix = ""): Promise<string[]> {
 }
 
 try {
-  execFileSync(path.join(root, "node_modules/.bin/tsx"), [path.join(root, "scripts/generate-mui-surface.ts")], {
+  execFileSync(process.execPath, ["--import", "tsx", path.join(root, "scripts/generate-mui-surface.ts")], {
     cwd: root,
     env: { ...process.env, UI_CORE_GENERATED_OUTPUT_DIR: temporary },
     stdio: "inherit"

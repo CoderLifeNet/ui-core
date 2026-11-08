@@ -41,6 +41,10 @@ const STATIC_EXPORTS: Record<string, { types: string; default: string } | string
     types: "./dist/analytics/index.d.ts",
     default: "./dist/analytics/index.js"
   },
+  "./accessibility": {
+    types: "./dist/accessibility/index.d.ts",
+    default: "./dist/accessibility/index.js"
+  },
   "./instrumentation": {
     types: "./dist/instrumentation/index.d.ts",
     default: "./dist/instrumentation/index.js"
@@ -79,14 +83,15 @@ const WRAPPED_SUBPATHS: Record<string, string> = {
   Select: "Select"
 };
 
-const INVALID_ROOT_EXPORTS = new Set([
-  "FormLabelRoot",
-  "StepperContext",
-  "createTransitions",
-  "experimental_extendTheme",
-  "private_createMixins",
-  "usePagination"
-]);
+// MUI 9.4 omits these runtime exports from its subpath declarations.
+// Describe them using public types so our declarations can stand on their own.
+const RUNTIME_ONLY_ROOT_EXPORT_TYPES: Readonly<Record<string, string>> = {
+  FormLabelRoot: 'import("react").ComponentType<import("react").ComponentPropsWithRef<"label"> & Pick<import("@mui/material/FormLabel").FormLabelOwnProps, "sx"> & { ownerState: import("@mui/material/FormLabel").FormLabelOwnProps }>',
+  StepperContext: 'import("react").Context<ReturnType<typeof import("@mui/material/Stepper").useStepperContext>>',
+  createTransitions: '(options: import("@mui/material/styles").TransitionsOptions) => import("@mui/material/styles").Transitions',
+  experimental_extendTheme: 'typeof import("@mui/material/styles").extendTheme',
+  private_createMixins: '(breakpoints: import("@mui/material/styles").Breakpoints, mixins: import("@mui/material/styles").MixinsOptions) => import("@mui/material/styles").Mixins'
+};
 
 function getVersion(pkg: Record<string, unknown>, name: string): string {
   const deps = pkg.dependencies as Record<string, string> | undefined;
@@ -95,20 +100,11 @@ function getVersion(pkg: Record<string, unknown>, name: string): string {
   return String(deps?.[name] ?? peers?.[name] ?? dev?.[name] ?? "unknown");
 }
 
-function chunk<T>(values: readonly T[], size: number): T[][] {
-  const output: T[][] = [];
-  for (let index = 0; index < values.length; index += size) {
-    output.push(values.slice(index, index + size) as T[]);
-  }
-  return output;
-}
-
-function isStableMaterialSubpath(key: string): boolean {
+function isPublicMaterialSubpath(key: string): boolean {
   if (!key.startsWith("./")) return false;
   if (key === "." || key === "./package.json") return false;
   if (key.includes("*")) return false;
   if (key.startsWith("./internal")) return false;
-  if (key.includes("Unstable") || key.includes("unstable")) return false;
   return true;
 }
 
@@ -154,7 +150,7 @@ async function collectPublicMaterialSubpaths(): Promise<string[]> {
     }
   }
 
-  return [...subpaths].filter(isStableMaterialSubpath).sort();
+  return [...subpaths].filter(isPublicMaterialSubpath).sort();
 }
 
 function toPassthroughPath(subpath: string): string {
@@ -181,7 +177,7 @@ function getTypesPath(exportValue: unknown): string | undefined {
 
 function classify(subpath: string, dtsSource: string, hasDefaultExport: boolean): ExportEntry["category"] {
   const symbol = subpath.split("/").at(-1) ?? subpath;
-  if (subpath.includes("deprecated") || subpath.includes("unstable")) {
+  if (/deprecated|unstable/i.test(subpath)) {
     return "experimental-or-deprecated";
   }
   if (symbol.startsWith("use")) {
@@ -205,6 +201,50 @@ function classify(subpath: string, dtsSource: string, hasDefaultExport: boolean)
   return "documented-public-subpath";
 }
 
+async function generateRootExports(wrappedNames: readonly string[]): Promise<string[]> {
+  const upstream = await import("@mui/material") as Record<string, unknown>;
+  const remaining = new Set(Object.keys(upstream));
+  const lines = ['export type * from "@mui/material";'];
+  for (const name of wrappedNames) {
+    remaining.delete(name);
+    lines.push(`export { ${name} } from "./wrappers/${name}.js";`);
+  }
+
+  // Next's server compiler can reject duplicate star exports in MUI's root
+  // when it reaches that module through another package's barrel.
+  const entry = await readFile(new URL(import.meta.resolve("@mui/material")), "utf8");
+  const sources = new Set(Array.from(entry.matchAll(/\bfrom\s+["']\.\/([^"']+)\/index\.m?js["']/g), (match) => match[1]!));
+  for (const source of sources) {
+    const specifier = `@mui/material/${source}`;
+    const values = await import(specifier) as Record<string, unknown>;
+    if (upstream[source] === values && remaining.delete(source)) {
+      lines.push(`export * as ${source} from "${specifier}";`);
+    }
+
+    const names: string[] = [];
+    for (const [name, value] of Object.entries(values)) {
+      const rootName = name === "default" ? source : name;
+      if (upstream[rootName] === value && remaining.delete(rootName)) {
+        const runtimeOnlyType = RUNTIME_ONLY_ROOT_EXPORT_TYPES[rootName];
+        if (runtimeOnlyType) {
+          lines.push("// @ts-ignore MUI provides this export at runtime.");
+          lines.push(`import { ${name} as mui_${rootName} } from "${specifier}";`);
+          lines.push(`export const ${rootName}: ${runtimeOnlyType} = mui_${rootName};`);
+        } else {
+          names.push(name === "default" ? `default as ${rootName}` : name);
+        }
+      }
+    }
+    if (names.length) lines.push(`export { ${names.join(", ")} } from "${specifier}";`);
+  }
+
+  if (remaining.delete("unstable_composeClasses")) {
+    lines.push('export { default as unstable_composeClasses } from "@mui/utils/composeClasses";');
+  }
+  if (remaining.size) throw new Error(`No public subpath for MUI root exports: ${[...remaining].join(", ")}`);
+  return lines;
+}
+
 async function main(): Promise<void> {
   const pkgRaw = await readFile(path.join(repoRoot, "package.json"), "utf8");
   if (JSON.parse(pkgRaw).name !== "@coderlifenet/ui-core") {
@@ -219,7 +259,7 @@ async function main(): Promise<void> {
   };
 
   const entries = muiPkg.exports
-    ? Object.keys(muiPkg.exports).filter(isStableMaterialSubpath).sort()
+    ? Object.keys(muiPkg.exports).filter(isPublicMaterialSubpath).sort()
     : await collectPublicMaterialSubpaths();
 
   const materialDir = path.join(outputRoot, "src", "material");
@@ -252,7 +292,8 @@ async function main(): Promise<void> {
       }
     }
 
-    const hasDefaultExport = /export\s+\{\s*default\s*\}|export\s+default\s+/m.test(dtsSource);
+    const hasDefaultExport =
+      /export\s+default\s|export\s*\{(?:[^}]*,)?\s*(?:default|\w+\s+as\s+default)\s*[,}]/.test(dtsSource);
 
     const wrapperName = WRAPPED_SUBPATHS[passthrough];
     const lines = [`export * from "@mui/material/${passthrough}";`];
@@ -334,19 +375,7 @@ async function main(): Promise<void> {
   );
 
   const wrappedNames = [...new Set(Object.values(WRAPPED_SUBPATHS))].sort();
-  const wrappedNameSet = new Set(wrappedNames);
-  const muiRuntime = (await import("@mui/material")) as Record<string, unknown>;
-  const passthroughValueExports = Object.keys(muiRuntime)
-    .filter((name) => name !== "default" && !wrappedNameSet.has(name) && !INVALID_ROOT_EXPORTS.has(name))
-    .sort();
-
-  const indexLines = ["export type * from \"@mui/material\";"];
-  for (const wrappedName of wrappedNames) {
-    indexLines.push(`export { ${wrappedName} } from \"./wrappers/${wrappedName}.js\";`);
-  }
-  for (const group of chunk(passthroughValueExports, 24)) {
-    indexLines.push(`export { ${group.join(", ")} } from \"@mui/material\";`);
-  }
+  const indexLines = await generateRootExports(wrappedNames);
   await writeFile(path.join(outputRoot, "src", "index.ts"), `${indexLines.join("\n")}\n`, "utf8");
 
   console.log(`Generated ${entries.length} material compatibility entry points.`);

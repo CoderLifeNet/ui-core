@@ -6,7 +6,7 @@ import MuiNativeSelect from "@mui/material/NativeSelect";
 import type { NativeSelectProps } from "@mui/material/NativeSelect";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
@@ -16,7 +16,7 @@ type NativeSelectFocusArgs = Parameters<NonNullable<NativeSelectProps["onFocus"]
 type NativeSelectBlurArgs = Parameters<NonNullable<NativeSelectProps["onBlur"]>>;
 
 function NativeSelectImpl(inProps: NativeSelectProps, ref: NativeSelectRef) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
   const resolvedOnChange = useResolvedDefaultHandler<NativeSelectProps["onChange"]>(
@@ -37,6 +37,10 @@ function NativeSelectImpl(inProps: NativeSelectProps, ref: NativeSelectRef) {
     "onBlur",
     onBlur
   );
+
+  if (!emit) {
+    return <MuiNativeSelect {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiNativeSelect

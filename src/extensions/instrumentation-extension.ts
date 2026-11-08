@@ -63,6 +63,7 @@ export function createAnalyticsExtension(
   return {
     id: "analytics-runtime",
     category: "instrumentation",
+    ...(runtime.reportBlocked ? { onEventBlocked: runtime.reportBlocked } : {}),
     onEvent: (event, context) => {
       runtime.dispatch(event, context);
     },

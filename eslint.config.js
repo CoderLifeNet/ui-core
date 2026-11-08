@@ -7,7 +7,7 @@ export default [
     languageOptions: {
       parser,
       parserOptions: {
-        project: ["./tsconfig.json"],
+        project: ["./tsconfig.json", "./tests/packed-consumer/tsconfig.json"],
         tsconfigRootDir: import.meta.dirname
       }
     },

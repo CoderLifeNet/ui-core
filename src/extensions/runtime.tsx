@@ -7,7 +7,9 @@ import type {
   UIExtensionsConfig,
   UIExtensionsContextValue,
   UIExtensionsProviderProps,
-  UIExtension
+  UIExtension,
+  UIEventBlockReason,
+  UIEventIdentity
 } from "./types.js";
 
 const DEFAULT_CONFIG: UIExtensionsConfig = {
@@ -107,64 +109,79 @@ export function UIExtensionsProvider({
   );
 
   const api = useMemo<UIExtensionsContextValue>(
-    () => ({
-      emit: (inputEvent, context = {}) => {
-        const currentConfig = configRef.current;
-        if (!currentConfig.enabled) {
-          return;
-        }
-
-        if (context.optedOut) {
-          return;
-        }
-
-        const event: UIEvent = {
-          ...inputEvent,
-          schemaVersion: "1.0.0",
-          timestamp: Date.now()
-        };
-
-        const dispatchContext: ExtensionDispatchContext = {
-          trackingPath: context.trackingPath ?? [],
-          optedOut: context.optedOut ?? false
-        };
-
+    () => {
+      const forEachExtension = (visit: (extension: UIExtension) => void): void => {
         for (const extension of propExtensionMapRef.current.values()) {
-          safeInvoke(extension, event, dispatchContext);
+          visit(extension);
         }
-
         for (const [id, registered] of runtimeExtensionMapRef.current.entries()) {
-          if (propExtensionMapRef.current.has(id)) {
-            continue;
+          if (!propExtensionMapRef.current.has(id)) {
+            visit(registered.extension);
           }
-          safeInvoke(registered.extension, event, dispatchContext);
         }
-      },
-      register: (extension) => {
-        const registrationId = ++registrationCounterRef.current;
-        upsert({
-          extension,
-          registrationId,
-          source: "runtime"
+      };
+      const reportBlocked = ({ type, component }: UIEventIdentity, reason: UIEventBlockReason): void => {
+        forEachExtension((extension) => {
+          try {
+            void extension.onEventBlocked?.({ type, component }, reason)?.catch(() => undefined);
+          } catch {
+            // Diagnostics must not break host interactions.
+          }
         });
-
-        return () => {
-          const current = runtimeExtensionMapRef.current.get(extension.id);
-          if (!current || current.registrationId !== registrationId || current.source !== "runtime") {
+      };
+      return {
+        reportBlocked,
+        emit: (inputEvent, context = {}) => {
+          const currentConfig = configRef.current;
+          if (!currentConfig.enabled) {
+            reportBlocked(inputEvent, "extensions_disabled");
             return;
           }
-          safelyDispose(current.extension);
-          runtimeExtensionMapRef.current.delete(extension.id);
-        };
-      },
-      updateConfig: (next) => {
-        configRef.current = {
-          ...configRef.current,
-          ...next
-        };
-      },
-      getConfig: () => configRef.current
-    }),
+
+          if (context.optedOut) {
+            reportBlocked(inputEvent, "scope_opt_out");
+            return;
+          }
+
+          const event: UIEvent = {
+            ...inputEvent,
+            schemaVersion: "1.0.0",
+            timestamp: Date.now()
+          };
+
+          const dispatchContext: ExtensionDispatchContext = {
+            trackingPath: context.trackingPath ?? [],
+            optedOut: context.optedOut ?? false
+          };
+
+          forEachExtension((extension) => safeInvoke(extension, event, dispatchContext));
+        },
+        register: (extension) => {
+          const registrationId = ++registrationCounterRef.current;
+          upsert({
+            extension,
+            registrationId,
+            source: "runtime"
+          });
+
+          return () => {
+            const current = runtimeExtensionMapRef.current.get(extension.id);
+            if (!current || current.registrationId !== registrationId || current.source !== "runtime") {
+              return;
+            }
+            safelyDispose(current.extension);
+            runtimeExtensionMapRef.current.delete(extension.id);
+          };
+        },
+        updateConfig: (next) => {
+          configRef.current = {
+            ...configRef.current,
+            ...next
+          };
+        },
+        getConfig: () => configRef.current
+      };
+    },
     []
   );
 

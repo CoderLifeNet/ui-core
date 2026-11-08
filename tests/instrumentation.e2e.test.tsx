@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import MuiButton from "@mui/material/Button";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "../src/material/Button.js";
+import { IconButton } from "../src/material/IconButton.js";
 import { Autocomplete } from "../src/material/Autocomplete.js";
 import { Checkbox } from "../src/material/Checkbox.js";
 import { Radio } from "../src/material/Radio.js";
@@ -16,6 +17,7 @@ import { TrackingBoundary } from "../src/extensions/tracking-boundary.js";
 import { createAnalyticsExtension } from "../src/extensions/instrumentation-extension.js";
 import { createMemoryAdapter } from "../src/analytics/adapters/memory.js";
 import { createAnalyticsRuntime } from "../src/analytics/runtime.js";
+import { createGA4Adapter, createUmamiAdapter } from "../src/analytics/index.js";
 
 function setupWithMemory(consentGranted = true) {
   const memory = createMemoryAdapter();
@@ -30,6 +32,52 @@ function setupWithMemory(consentGranted = true) {
 }
 
 describe("instrumentation runtime e2e", () => {
+  it("switches analytics providers without changing accessible keyboard interaction", async () => {
+    const user = userEvent.setup();
+    const gtag = vi.fn();
+    const track = vi.fn();
+    const onClick = vi.fn();
+    const runtime = createAnalyticsRuntime([createGA4Adapter({ client: gtag })], { enabled: true });
+    render(
+      <UIExtensionsProvider initialConfig={{ enabled: true }} extensions={[createAnalyticsExtension(runtime)]}>
+        <TrackingBoundary id="toolbar" semanticId="save">
+          <IconButton aria-label="Save" aria-describedby="save-hint" onClick={onClick}>
+            <span aria-hidden="true">+</span>
+          </IconButton>
+          <span id="save-hint">Save your changes</span>
+          <TrackingBoundary id="private" optOut>
+            <TextField id="notes" label="Notes" helperText="Private notes" />
+            <Button>Private action</Button>
+          </TrackingBoundary>
+        </TrackingBoundary>
+      </UIExtensionsProvider>
+    );
+
+    const save = screen.getByRole("button", { name: "Save", description: "Save your changes" });
+    expect(screen.getByRole("textbox", { name: "Notes", description: "Private notes" })).toBeTruthy();
+    await user.tab();
+    expect(document.activeElement).toBe(save);
+    await user.keyboard("{Enter}");
+    expect(gtag).not.toHaveBeenCalled();
+
+    runtime.update({ consent: { analyticsStorage: "granted", adStorage: "denied" } });
+    await user.keyboard("{Enter}");
+    expect(gtag).toHaveBeenCalledWith("event", "ui_icon_button_click",
+      expect.objectContaining({ semantic_id: "save", tracking_path: "toolbar" }));
+
+    runtime.setAdapters([createUmamiAdapter({ client: { track } })]);
+    await user.keyboard("{Enter}");
+    expect(track).toHaveBeenCalledWith("ui.icon_button.click",
+      expect.objectContaining({ semantic_id: "save", tracking_path: "toolbar" }));
+
+    await user.click(screen.getByRole("button", { name: "Private action" }));
+    runtime.update({ adapterEnabled: { umami: false } });
+    await user.click(save);
+    expect(onClick).toHaveBeenCalledTimes(4);
+    expect(gtag).toHaveBeenCalledTimes(1);
+    expect(track).toHaveBeenCalledTimes(1);
+  });
+
   it("works without provider and without throwing", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
