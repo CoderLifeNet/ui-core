@@ -20,7 +20,7 @@ try {
   git("commit", "-qm", "Correct generated fixture");
   const check = (label, expected) => {
     const before = git("status", "--porcelain").toString();
-    const result = spawnSync(path.join(copy, "node_modules/.bin/tsx"), ["scripts/check-generated.ts"], { cwd: copy, encoding: "utf8" });
+    const result = spawnSync(process.execPath, ["--import", "tsx", "scripts/check-generated.ts"], { cwd: copy, encoding: "utf8" });
     assert.equal(result.status, expected, `${label}: ${result.stdout}\n${result.stderr}`);
     assert.equal(git("status", "--porcelain").toString(), before, "check changed worktree/index");
     console.log(`PASS ${label}: exit ${result.status}`);
@@ -42,7 +42,7 @@ try {
   assert.ok(source.includes("Generated from installed package export metadata and declaration files."));
   writeFileSync(generator, source.replace("Generated from installed package export metadata and declaration files.", "Changed generator input for regression proof."));
   check("changed generator without regeneration", 1);
-  execFileSync(path.join(copy, "node_modules/.bin/tsx"), ["scripts/generate-mui-surface.ts"], { cwd: copy, stdio: "pipe" });
+  execFileSync(process.execPath, ["--import", "tsx", "scripts/generate-mui-surface.ts"], { cwd: copy, stdio: "pipe" });
   check("correct regeneration", 0);
 } finally {
   rmSync(copy, { recursive: true, force: true });

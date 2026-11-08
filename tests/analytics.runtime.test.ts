@@ -60,6 +60,32 @@ describe("createAnalyticsRuntime", () => {
     expect(memory.read()).toHaveLength(1);
   });
 
+  it("stops delivery when a diagnostic callback revokes consent mid-dispatch", () => {
+    const first = { id: "first", kind: "custom" as const, onEvent: vi.fn() };
+    const second = { id: "second", kind: "custom" as const, onEvent: vi.fn() };
+    const runtime = createAnalyticsRuntime([first, second], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "denied" }
+    }, {
+      onDiagnostic: (diagnostic) => {
+        if (diagnostic.status === "dispatched" && diagnostic.adapterId === first.id) {
+          runtime.update({ consent: { analyticsStorage: "denied", adStorage: "denied" } });
+        }
+      }
+    });
+
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.button.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+
+    expect(first.onEvent).toHaveBeenCalledTimes(1);
+    expect(second.onEvent).not.toHaveBeenCalled();
+  });
+
   it("maps events through GA4 adapter", () => {
     const gtag = vi.fn();
     const adapter = createGA4Adapter({ client: gtag });
@@ -238,6 +264,33 @@ describe("createAnalyticsRuntime", () => {
     await Promise.resolve();
 
     expect(adapter.onEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it("drops queued events when consent is revoked during adapter setup", async () => {
+    let finishConfigure!: () => void;
+    const configuring = new Promise<void>((resolve) => { finishConfigure = resolve; });
+    const adapter = {
+      id: "custom",
+      kind: "custom" as const,
+      configure: () => configuring,
+      onEvent: vi.fn()
+    };
+    const onDiagnostic = vi.fn();
+    const consent = { analyticsStorage: "granted", adStorage: "denied" } as const;
+    const runtime = createAnalyticsRuntime([adapter], { enabled: true, consent }, { onDiagnostic });
+    const event = { schemaVersion: "1.0.0", type: "ui.click", action: "click", component: "Button", timestamp: 1 } as const;
+    runtime.dispatch(event);
+    runtime.update({ consent: { ...consent, analyticsStorage: "denied" } });
+    runtime.dispatch(event);
+    runtime.update({ consent });
+    finishConfigure();
+    await configuring;
+    await Promise.resolve();
+
+    expect(adapter.onEvent).not.toHaveBeenCalled();
+    expect(onDiagnostic.mock.calls).toEqual(Array.from({ length: 2 }, () => [{
+      type: "ui.click", component: "Button", status: "blocked", reason: "analytics_consent_denied"
+    }]));
   });
 
   it("propagates tracking context into memory adapter inspection API", () => {

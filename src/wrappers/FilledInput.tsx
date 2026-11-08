@@ -6,7 +6,7 @@ import MuiFilledInput from "@mui/material/FilledInput";
 import type { FilledInputProps } from "@mui/material/FilledInput";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
@@ -16,7 +16,7 @@ type FilledInputFocusArgs = Parameters<NonNullable<FilledInputProps["onFocus"]>>
 type FilledInputBlurArgs = Parameters<NonNullable<FilledInputProps["onBlur"]>>;
 
 function FilledInputImpl(inProps: FilledInputProps, ref: FilledInputRef) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
   const resolvedOnChange = useResolvedDefaultHandler<FilledInputProps["onChange"]>(
@@ -27,6 +27,10 @@ function FilledInputImpl(inProps: FilledInputProps, ref: FilledInputRef) {
   );
   const resolvedOnFocus = useResolvedDefaultHandler<FilledInputProps["onFocus"]>(theme, "MuiFilledInput", "onFocus", onFocus);
   const resolvedOnBlur = useResolvedDefaultHandler<FilledInputProps["onBlur"]>(theme, "MuiFilledInput", "onBlur", onBlur);
+
+  if (!emit) {
+    return <MuiFilledInput {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiFilledInput

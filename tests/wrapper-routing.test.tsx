@@ -1,10 +1,13 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { render, screen } from "@testing-library/react";
+import { createRef } from "react";
+import type { ComponentPropsWithRef } from "react";
+import { render, screen, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import MuiButton from "@mui/material/Button";
+import MuiLink from "@mui/material/Link";
 import {
   Button as RootButton,
   AccordionSummary as RootAccordionSummary,
@@ -92,6 +95,29 @@ describe("wrapper routing", () => {
   it("does not expose wrapped Button as upstream component identity", () => {
     expect(RootButton).not.toBe(MuiButton);
     expect((RootButton as { muiName?: string }).muiName).toBe((MuiButton as { muiName?: string }).muiName);
+  });
+
+  it.each([MuiLink, RootLink, SubpathLink])("passes the original callback to a custom Link component without a provider", async (Link) => {
+    const onClick = vi.fn();
+    const receivedClick = vi.fn();
+    const ref = createRef<HTMLAnchorElement>();
+
+    function CustomLink(props: ComponentPropsWithRef<"a">) {
+      receivedClick(props.onClick);
+      return <a {...props} />;
+    }
+
+    const { container } = render(
+      <Link component={CustomLink} href="#details" onClick={onClick} ref={ref}>
+        Details
+      </Link>
+    );
+
+    const link = within(container).getByRole("link", { name: "Details" });
+    expect(ref.current).toBe(link);
+    expect(receivedClick).toHaveBeenLastCalledWith(onClick);
+    await userEvent.click(link);
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   it("delivers equivalent events for root and subpath Button under the same provider", async () => {

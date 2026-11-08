@@ -13,14 +13,15 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist generated src/material",
-    "generate:mui": "tsx scripts/generate-mui-surface.ts",
+    "generate:mui": "node --import tsx scripts/generate-mui-surface.ts",
     "generate": "pnpm generate:mui",
-    "check:generated": "tsx scripts/check-generated.ts",
+    "check:generated": "node --import tsx scripts/check-generated.ts",
     "test:generated": "node scripts/test-generated-check.mjs",
-    "check:exports": "tsx scripts/check-exports.ts",
+    "check:exports": "node --import tsx scripts/check-exports.ts",
     "check:visual": "node scripts/check-visual-regression.mjs",
     "check:bundle": "node scripts/check-button-bundle.mjs",
-    "check:acceptance": "node --test scripts/test-publish-tarball.mjs && pnpm check:generated && pnpm test:generated && pnpm typecheck && pnpm test && pnpm build && pnpm check:exports && pnpm check:visual && pnpm check:bundle && pnpm pack:local",
+    "check:consumers": "node scripts/check-packed-consumers.mjs",
+    "check:acceptance": "node --test scripts/test-publish-tarball.mjs && pnpm check:generated && pnpm test:generated && pnpm typecheck && pnpm test && pnpm build && pnpm check:exports && pnpm check:visual && pnpm check:bundle && pnpm pack:local && pnpm check:consumers",
     "build": "pnpm generate && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
@@ -58,6 +59,10 @@
     "./analytics": {
       "types": "./dist/analytics/index.d.ts",
       "default": "./dist/analytics/index.js"
+    },
+    "./accessibility": {
+      "types": "./dist/accessibility/index.d.ts",
+      "default": "./dist/accessibility/index.js"
     },
     "./instrumentation": {
       "types": "./dist/instrumentation/index.d.ts",
@@ -608,6 +613,10 @@
       "types": "./dist/material/Typography.d.ts",
       "default": "./dist/material/Typography.js"
     },
+    "./Unstable_TrapFocus": {
+      "types": "./dist/material/Unstable_TrapFocus.d.ts",
+      "default": "./dist/material/Unstable_TrapFocus.js"
+    },
     "./Zoom": {
       "types": "./dist/material/Zoom.d.ts",
       "default": "./dist/material/Zoom.js"
@@ -707,6 +716,8 @@
     }
   },
   "dependencies": {
+    "@mui/utils": "^9.4.0",
+    "dom-accessibility-api": "0.6.3",
     "zod": "3.23.8"
   },
   "devDependencies": {

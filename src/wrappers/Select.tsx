@@ -6,7 +6,7 @@ import MuiSelect from "@mui/material/Select";
 import type { SelectChangeEvent, SelectProps } from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
@@ -16,7 +16,7 @@ function SelectImpl<Value = unknown>(
   inProps: SelectProps<Value>,
   ref: SelectRef
 ) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
   const resolvedOnChange = useResolvedDefaultHandler<SelectProps<Value>["onChange"]>(
@@ -27,6 +27,10 @@ function SelectImpl<Value = unknown>(
   );
   const resolvedOnFocus = useResolvedDefaultHandler<SelectProps<Value>["onFocus"]>(theme, "MuiSelect", "onFocus", onFocus);
   const resolvedOnBlur = useResolvedDefaultHandler<SelectProps<Value>["onBlur"]>(theme, "MuiSelect", "onBlur", onBlur);
+
+  if (!emit) {
+    return <MuiSelect {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiSelect

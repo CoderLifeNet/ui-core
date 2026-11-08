@@ -229,7 +229,7 @@
       "category": "type-only",
       "subpath": "./ClickAwayListener",
       "moduleSpecifier": "@mui/material/ClickAwayListener",
-      "hasDefaultExport": false,
+      "hasDefaultExport": true,
       "notes": "Generated from installed package export metadata and declaration files."
     },
     {
@@ -257,7 +257,7 @@
       "category": "context-provider",
       "subpath": "./DefaultPropsProvider",
       "moduleSpecifier": "@mui/material/DefaultPropsProvider",
-      "hasDefaultExport": false,
+      "hasDefaultExport": true,
       "notes": "Generated from installed package export metadata and declaration files."
     },
     {
@@ -957,6 +957,13 @@
       "category": "renderable-component",
       "subpath": "./Typography",
       "moduleSpecifier": "@mui/material/Typography",
+      "hasDefaultExport": true,
+      "notes": "Generated from installed package export metadata and declaration files."
+    },
+    {
+      "category": "experimental-or-deprecated",
+      "subpath": "./Unstable_TrapFocus",
+      "moduleSpecifier": "@mui/material/Unstable_TrapFocus",
       "hasDefaultExport": true,
       "notes": "Generated from installed package export metadata and declaration files."
     },

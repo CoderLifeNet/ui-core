@@ -6,7 +6,7 @@ import MuiSlider from "@mui/material/Slider";
 import type { SliderProps } from "@mui/material/Slider";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
@@ -14,7 +14,7 @@ type SliderRef = ComponentPropsWithRef<typeof MuiSlider>["ref"];
 type SliderCommittedArgs = Parameters<NonNullable<SliderProps["onChangeCommitted"]>>;
 
 function SliderImpl(inProps: SliderProps, ref: SliderRef) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChangeCommitted, ...props } = inProps;
   const resolvedOnChangeCommitted = useResolvedDefaultHandler<SliderProps["onChangeCommitted"]>(
@@ -23,6 +23,10 @@ function SliderImpl(inProps: SliderProps, ref: SliderRef) {
     "onChangeCommitted",
     onChangeCommitted
   );
+
+  if (!emit) {
+    return <MuiSlider {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiSlider

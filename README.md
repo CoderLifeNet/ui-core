@@ -43,6 +43,45 @@ import { Timeline } from "@coderlifenet/ui-core/lab";
 import { Home } from "@coderlifenet/ui-core/icons";
 ```
 
+Core forwards the MUI 9.4.0 root API and public Material subpaths. Twenty components add instrumentation through their usual MUI callbacks. Other components retain MUI identity. Lab and Icons use the optional entry points above. MUI X is a separate API.
+
+For a basic migration, change the import and keep your existing JSX, MUI theme, and component props. No CoderLife provider is required. Without an extensions provider, instrumentable components pass your props and refs directly to MUI, including callbacks and slot configuration. Add the extensions provider when you want instrumentation, or mount accessibility diagnostics separately when you want development checks.
+
+Use MUI accessibility props and behavior directly. For example, give an icon-only button an `aria-label`, use `TextField`'s `id`, `label`, and `helperText` for form associations, and use MUI `slotProps` for attributes that belong on an inner element. Accessibility works independently of analytics.
+
+### Optional development checks
+
+```tsx
+import { AccessibilityDiagnostics } from "@coderlifenet/ui-core/accessibility";
+
+<AccessibilityDiagnostics enabled={isDevelopment} />;
+```
+
+Set `isDevelopment` using your app's build environment. Mount this once to check for missing accessible names on rendered `IconButton`, `TextField`, and `Dialog` elements and broken `aria-describedby` references on `TextField` controls. It writes warnings to the console by default. Supply `onIssue` to handle them locally. The default document scope includes MUI portals. An optional `root` limits scanning to a subtree, and `data-ui-core-a11y-ignore` excludes a specific element or subtree.
+
+### Accessibility checks in tests
+
+Run the same checks against the rendered DOM. Pass `document` when the test opens a portal.
+
+```tsx
+import { scanAccessibility } from "@coderlifenet/ui-core/accessibility";
+import { render } from "@testing-library/react";
+import { expect, it } from "vitest";
+import { TextField } from "@coderlifenet/ui-core";
+
+it("labels the email field and links its helper text", () => {
+  const { container } = render(
+    <TextField id="email" label="Email" helperText="Use your work email" />
+  );
+
+  expect(scanAccessibility(container).map(({ code, message, element }) => ({
+    code,
+    message,
+    html: element.outerHTML
+  }))).toEqual([]);
+});
+```
+
 ## Extensions Runtime
 
 ```tsx
@@ -88,6 +127,10 @@ Keep a single runtime instance and apply state changes with `analyticsRuntime.up
 - No vendor SDK script is loaded by this package.
 - Host applications own SDK loading, lifecycle, and consent wiring.
 
+Choose GA4, Umami, Adobe, Meta Pixel, or a custom adapter in the host runtime. See [Analytics Integration](docs/ANALYTICS_INTEGRATION.md) for examples using existing trackers.
+
+The optional `AnalyticsInspector` shows why tracked interactions are blocked and which adapters receive them. See the [inspector setup](docs/ANALYTICS_INTEGRATION.md#analytics-inspector).
+
 Input-family high-volume events are disabled by default (`TextField`, `InputBase`, `Input`, `FilledInput`, `OutlinedInput`, `NativeSelect`) and can be explicitly enabled per scope with `TrackingBoundary.events`.
 
 Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Switch` is available and default-disabled unless explicitly selected via scope allowlists.
@@ -118,6 +161,8 @@ pnpm typecheck
 pnpm test
 pnpm build
 ```
+
+Run `pnpm pack:local && pnpm check:consumers` to build and test a clean Vite and Next.js App Router consumer against the local tarball. The check uses an isolated install and Chromium. It also runs as part of `pnpm check:acceptance`.
 
 ## Explicit Exclusions
 

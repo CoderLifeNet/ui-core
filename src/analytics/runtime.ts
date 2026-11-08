@@ -1,11 +1,14 @@
 import type { UIEvent } from "../extensions/types.js";
-import type { ExtensionDispatchContext } from "../extensions/types.js";
+import type { ExtensionDispatchContext, UIEventIdentity } from "../extensions/types.js";
 import type {
   AnalyticsAdapter,
+  AnalyticsBlockReason,
   AnalyticsConsent,
+  AnalyticsDiagnosticDetail,
   AnalyticsDispatchContext,
   AnalyticsDispatchConfig,
   AnalyticsRuntime,
+  AnalyticsRuntimeOptions,
   AnalyticsSetAdaptersOptions
 } from "./types.js";
 
@@ -40,7 +43,8 @@ function shouldSample(sampleRate: number): boolean {
 
 export function createAnalyticsRuntime(
   initialAdapters: AnalyticsAdapter[],
-  initialConfig?: Partial<AnalyticsDispatchConfig>
+  initialConfig?: Partial<AnalyticsDispatchConfig>,
+  options: AnalyticsRuntimeOptions = {}
 ): AnalyticsRuntime {
   let config: AnalyticsDispatchConfig = {
     enabled: false,
@@ -67,42 +71,67 @@ export function createAnalyticsRuntime(
     consent: config.consent
   });
 
-  const deliverEvent = (event: Parameters<AnalyticsRuntime["dispatch"]>[0], context?: Partial<ExtensionDispatchContext>): void => {
-    const dispatchContext = buildDispatchContext(context);
+  const observer = options.onDiagnostic;
+  const report = ({ type, component }: UIEventIdentity, detail: AnalyticsDiagnosticDetail): void => {
+    try {
+      void observer?.({ type, component, ...detail })?.catch(() => undefined);
+    } catch {
+      // Diagnostics must not break host interactions.
+    }
+  };
 
-    if (dispatchContext.optedOut) {
-      return;
-    }
-    if (!config.enabled) {
-      return;
-    }
-    if (config.consent.analyticsStorage !== "granted") {
-      return;
-    }
-    if (!passesAllowlist(event.component, config.componentAllowlist)) {
-      return;
-    }
-    if (!passesAllowlist(event.type, config.eventAllowlist)) {
+  const blockReason = (event: UIEvent, context?: Partial<ExtensionDispatchContext>): AnalyticsBlockReason | undefined => {
+    if (context?.optedOut) return "scope_opt_out";
+    if (!config.enabled) return "analytics_disabled";
+    if (config.consent.analyticsStorage !== "granted") return "analytics_consent_denied";
+    if (!passesAllowlist(event.component, config.componentAllowlist)) return "component_filter";
+    if (!passesAllowlist(event.type, config.eventAllowlist)) return "event_filter";
+    if (adapters.length === 0) return "no_adapters";
+    return undefined;
+  };
+
+  const deliverEvent = (event: UIEvent, context?: Partial<ExtensionDispatchContext>): void => {
+    const reason = blockReason(event, context);
+    if (reason) {
+      if (observer) report(event, { status: "blocked", reason });
       return;
     }
     for (const adapter of adapters) {
-      const adapterEnabled = config.adapterEnabled?.[adapter.id] ?? config.enabled;
+      const adapterId = adapter.id;
+      const adapterEnabled = config.adapterEnabled?.[adapterId] ?? config.enabled;
       if (!adapterEnabled) {
+        if (observer) report(event, { status: "blocked", reason: "adapter_disabled", adapterId });
         continue;
       }
       if (adapter.kind === "meta-pixel" && config.consent.adStorage !== "granted") {
+        if (observer) report(event, { status: "blocked", reason: "ad_consent_denied", adapterId });
         continue;
       }
-      if (!shouldSample(clampSampleRate(config.adapterSampleRate?.[adapter.id] ?? config.defaultSampleRate ?? 1))) {
+      if (!shouldSample(clampSampleRate(config.adapterSampleRate?.[adapterId] ?? config.defaultSampleRate ?? 1))) {
+        if (observer) report(event, { status: "blocked", reason: "sampled_out", adapterId });
         continue;
       }
       try {
-        const result = adapter.onEvent(event, dispatchContext);
-        if (result && typeof (result as Promise<void>).catch === "function") {
-          void (result as Promise<void>).catch(() => undefined);
+        if (adapter.isAvailable?.() === false) {
+          if (observer) report(event, { status: "tracker_unavailable", adapterId });
+          continue;
+        }
+        const currentBlockReason = blockReason(event, context);
+        if (currentBlockReason) {
+          if (observer) report(event, { status: "blocked", reason: currentBlockReason });
+          return;
+        }
+        const result = adapter.onEvent(event, buildDispatchContext(context));
+        if (result) {
+          void Promise.resolve(result).then(
+            () => { if (observer) report(event, { status: "dispatched", adapterId }); },
+            () => { if (observer) report(event, { status: "failed", adapterId }); }
+          );
+        } else if (observer) {
+          report(event, { status: "dispatched", adapterId });
         }
       } catch {
-        // Adapter failures must not escape user interactions.
+        if (observer) report(event, { status: "failed", adapterId });
       }
     }
   };
@@ -157,6 +186,9 @@ export function createAnalyticsRuntime(
   applyAdapterConfig();
 
   return {
+    ...(observer ? { reportBlocked: (event: UIEventIdentity, reason: AnalyticsBlockReason) => {
+      report(event, { status: "blocked", reason });
+    } } : {}),
     update: (next) => {
       config = {
         ...config,
@@ -166,10 +198,20 @@ export function createAnalyticsRuntime(
           ...(next.consent ?? {})
         }
       };
+      if (!config.enabled || config.consent.analyticsStorage !== "granted") {
+        for (const { event } of queuedDispatches.splice(0)) {
+          if (observer) report(event, { status: "blocked", reason: config.enabled ? "analytics_consent_denied" : "analytics_disabled" });
+        }
+      }
       applyAdapterConfig();
     },
     dispatch: (event, context) => {
       if (pendingConfigureCount > 0) {
+        const reason = blockReason(event, context);
+        if (reason) {
+          if (observer) report(event, { status: "blocked", reason });
+          return;
+        }
         queuedDispatches.push(context ? { event, context } : { event });
         return;
       }
@@ -195,6 +237,7 @@ export function createAnalyticsRuntime(
         disposeAdapter(adapter);
       }
       adapters = [];
+      queuedDispatches.length = 0;
     }
   };
 }

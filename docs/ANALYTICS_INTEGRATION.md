@@ -77,12 +77,68 @@ Precedence and behavior:
 
 ## Provider Mapping
 
+Choose adapters once at the application shell. Core's instrumented controls and semantic events from `ui-components` use the same runtime.
+
+```ts
+import {
+  createAnalyticsRuntime,
+  createGA4Adapter,
+  createUmamiAdapter,
+  type GA4Client,
+  type UmamiClient
+} from "@coderlifenet/ui-core/analytics";
+
+// Supply clients from the app's existing trackers.
+function setupAnalytics(gtag: GA4Client, umami: UmamiClient) {
+  const ga4 = createGA4Adapter({ client: gtag });
+  const umamiAdapter = createUmamiAdapter({ client: umami });
+  const runtime = createAnalyticsRuntime([ga4]);
+
+  return { runtime, umamiAdapter };
+}
+```
+
+Attach the runtime with `createAnalyticsExtension(runtime)` and `UIExtensionsProvider`. Update `enabled` and `consent.analyticsStorage` from your app's consent state. Use `runtime.setAdapters([umamiAdapter])` to switch providers. Pass several adapters to send to each one, or set `adapterEnabled: { ga4: false }` to disable an individual adapter.
+
+- GA4 calls the existing `gtag("event", name, params)`. The default converts `ui.button.click` to `ui_button_click`. Use `mapEventName` for an existing reporting name and `sendTo` when you need to select a configured Google destination explicitly.
+- Umami calls the existing `umami.track(name, data)`. By default it uses the original name, such as `ui.button.click`. It also accepts `mapEventName`.
+- The app owns tracker initialization, pageview settings, and consent for events it sends directly. Pass only content-free metadata and scope identifiers.
+
 Adapters receive context separately from event metadata:
 
-- GA4 / Meta Pixel: `tracking_path`
+- GA4 / Umami / Meta Pixel: `tracking_path`
 - Adobe: `trackingPath`
 
 This mapping is stable and does not flatten scope identity into arbitrary user metadata keys.
+
+## Analytics Inspector
+
+Create the inspector and runtime once in your client-side setup. Connect `onDiagnostic` to the store and mount the panel where you want to inspect events.
+
+```tsx
+"use client";
+
+import {
+  AnalyticsInspector, createAnalyticsInspector, createAnalyticsRuntime, createGA4Adapter, type GA4Client
+} from "@coderlifenet/ui-core/analytics";
+
+export function setupDiagnostics(getGtag: () => GA4Client | undefined) {
+  const inspector = createAnalyticsInspector();
+  const ga4 = createGA4Adapter({
+    isAvailable: () => Boolean(getGtag()),
+    client: (command, name, params) => getGtag()?.(command, name, params)
+  });
+  const runtime = createAnalyticsRuntime([ga4], { enabled: true }, {
+    onDiagnostic: inspector.onDiagnostic
+  });
+
+  return { runtime, panel: <AnalyticsInspector inspector={inspector} /> };
+}
+```
+
+Wire the runtime to `UIExtensionsProvider` with `createAnalyticsExtension(runtime)` as usual. Analytics consent still starts denied. Update it from the app's consent state. GA4 and Umami support an optional `isAvailable` function for trackers that load asynchronously. Core reports those events as tracker unavailable and drops them.
+
+The panel keeps the latest 100 decisions in memory. It shows the Core event name, component, adapter when applicable, and the reason for a block. It excludes event metadata, semantic IDs, and tracking paths. **Dispatched** means the adapter call completed. The analytics service confirms dashboard receipt separately. You can supply your own `onDiagnostic` handler when you only need the data.
 
 ## Content-Free File Input Pattern
 

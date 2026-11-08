@@ -18,6 +18,9 @@ export interface ExtensionDispatchContext {
   optedOut: boolean;
 }
 
+export type UIEventIdentity = Pick<UIEvent, "type" | "component">;
+export type UIEventBlockReason = "extensions_disabled" | "scope_opt_out" | "scope_event_filter" | "event_disabled_by_default";
+
 export interface TrackingBoundaryMetadata {
   semanticId?: string;
   metadata?: Record<string, string | number | boolean | null>;
@@ -28,6 +31,7 @@ export interface UIExtension {
   id: string;
   category: "instrumentation" | "custom";
   onEvent?: (event: UIEvent, context: ExtensionDispatchContext) => void | Promise<void>;
+  onEventBlocked?: (event: UIEventIdentity, reason: UIEventBlockReason) => void | Promise<void>;
   configure?: (config: unknown) => void;
   dispose?: () => void;
 }
@@ -39,6 +43,7 @@ export interface UIExtensionsConfig {
 
 export interface UIExtensionsContextValue {
   emit: (event: Omit<UIEvent, "schemaVersion" | "timestamp">, context?: Partial<ExtensionDispatchContext>) => void;
+  reportBlocked?: (event: UIEventIdentity, reason: UIEventBlockReason) => void;
   register: (extension: UIExtension) => () => void;
   updateConfig: (next: Partial<UIExtensionsConfig>) => void;
   getConfig: () => Readonly<UIExtensionsConfig>;

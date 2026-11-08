@@ -6,7 +6,7 @@ import type { AutocompleteChangeReason, AutocompleteProps } from "@mui/material/
 import MuiAutocomplete from "@mui/material/Autocomplete";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { CompositeEventOwnershipProvider } from "./composite-event-ownership.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
@@ -43,7 +43,7 @@ function AutocompleteImpl<
   inProps: AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>,
   ref: AutocompleteRef
 ) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, renderInput, ...props } = inProps;
   const resolvedOnChange = useResolvedDefaultHandler<AutocompleteProps<TValue, Multiple, DisableClearable, FreeSolo>["onChange"]>(
@@ -64,6 +64,10 @@ function AutocompleteImpl<
     "onBlur",
     onBlur
   );
+
+  if (!emit) {
+    return <MuiAutocomplete {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiAutocomplete

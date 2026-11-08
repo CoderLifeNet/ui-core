@@ -6,7 +6,7 @@ import MuiIconButton from "@mui/material/IconButton";
 import type { IconButtonProps } from "@mui/material/IconButton";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
@@ -14,7 +14,7 @@ type IconButtonRef = ComponentPropsWithRef<typeof MuiIconButton>["ref"];
 type IconButtonClickArgs = Parameters<NonNullable<IconButtonProps["onClick"]>>;
 
 function IconButtonImpl(inProps: IconButtonProps, ref: IconButtonRef) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onClick, ...props } = inProps;
   const resolvedOnClick = useResolvedDefaultHandler<IconButtonProps["onClick"]>(
@@ -23,6 +23,10 @@ function IconButtonImpl(inProps: IconButtonProps, ref: IconButtonRef) {
     "onClick",
     onClick
   );
+
+  if (!emit) {
+    return <MuiIconButton {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiIconButton

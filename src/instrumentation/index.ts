@@ -1,3 +1,4 @@
 export * from "./manifest.js";
-export * from "./emit.js";
+export { useEmitUIEvent } from "./emit.js";
+export type { EmitUIEventInput } from "./emit.js";
 export * from "./compose-handler.js";

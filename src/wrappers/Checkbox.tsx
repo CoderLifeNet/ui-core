@@ -6,7 +6,7 @@ import MuiCheckbox from "@mui/material/Checkbox";
 import type { CheckboxProps } from "@mui/material/Checkbox";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler } from "./resolve-theme-default-handler.js";
 
@@ -16,7 +16,7 @@ type CheckboxFocusArgs = Parameters<NonNullable<CheckboxProps["onFocus"]>>;
 type CheckboxBlurArgs = Parameters<NonNullable<CheckboxProps["onBlur"]>>;
 
 function CheckboxImpl(inProps: CheckboxProps, ref: CheckboxRef) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
   const resolvedOnChange = useResolvedDefaultHandler<CheckboxProps["onChange"]>(
@@ -27,6 +27,10 @@ function CheckboxImpl(inProps: CheckboxProps, ref: CheckboxRef) {
   );
   const resolvedOnFocus = useResolvedDefaultHandler<CheckboxProps["onFocus"]>(theme, "MuiCheckbox", "onFocus", onFocus);
   const resolvedOnBlur = useResolvedDefaultHandler<CheckboxProps["onBlur"]>(theme, "MuiCheckbox", "onBlur", onBlur);
+
+  if (!emit) {
+    return <MuiCheckbox {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiCheckbox

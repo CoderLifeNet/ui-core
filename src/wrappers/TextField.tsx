@@ -6,7 +6,7 @@ import MuiTextField from "@mui/material/TextField";
 import type { TextFieldProps } from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { composeHandler } from "../instrumentation/compose-handler.js";
-import { useEmitUIEvent } from "../instrumentation/emit.js";
+import { useOptionalUIEventEmitter } from "../instrumentation/emit.js";
 import { useIsCompositeEventOwnedBy } from "./composite-event-ownership.js";
 import { preserveComponentType } from "./preserve-component-type.js";
 import { useResolvedDefaultHandler, useResolvedDefaultProp } from "./resolve-theme-default-handler.js";
@@ -17,7 +17,7 @@ type TextFieldFocusArgs = Parameters<NonNullable<TextFieldProps["onFocus"]>>;
 type TextFieldBlurArgs = Parameters<NonNullable<TextFieldProps["onBlur"]>>;
 
 function TextFieldImpl(inProps: TextFieldProps, ref: TextFieldRef) {
-  const emit = useEmitUIEvent();
+  const emit = useOptionalUIEventEmitter();
   const theme = useTheme();
   const { onChange, onFocus, onBlur, ...props } = inProps;
   const resolvedOnChange = useResolvedDefaultHandler<TextFieldProps["onChange"]>(
@@ -33,6 +33,10 @@ function TextFieldImpl(inProps: TextFieldProps, ref: TextFieldRef) {
 
   const ownsSelectEvents = Boolean(resolvedSelect);
   const suppressTextFieldFocusBlur = isAutocompleteOwned && !ownsSelectEvents;
+
+  if (!emit) {
+    return <MuiTextField {...inProps} ref={ref} />;
+  }
 
   return (
     <MuiTextField
