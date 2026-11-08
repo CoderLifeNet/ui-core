@@ -86,6 +86,70 @@ describe("createAnalyticsRuntime", () => {
     expect(second.onEvent).not.toHaveBeenCalled();
   });
 
+  it("blocks Meta Pixel when its availability hook revokes ad consent", () => {
+    const pixel = {
+      id: "pixel",
+      kind: "meta-pixel" as const,
+      isAvailable: () => {
+        runtime.update({ consent: { analyticsStorage: "granted", adStorage: "denied" } });
+        return true;
+      },
+      onEvent: vi.fn()
+    };
+    const onDiagnostic = vi.fn();
+    const runtime = createAnalyticsRuntime([pixel], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "granted" }
+    }, { onDiagnostic });
+
+    runtime.dispatch({
+      schemaVersion: "1.0.0",
+      type: "ui.button.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    });
+
+    expect(pixel.onEvent).not.toHaveBeenCalled();
+    expect(onDiagnostic).toHaveBeenCalledWith(expect.objectContaining({
+      status: "blocked",
+      reason: "ad_consent_denied",
+      adapterId: pixel.id
+    }));
+  });
+
+  it("skips an adapter replaced during a diagnostic callback", () => {
+    const first = { id: "first", kind: "custom" as const, onEvent: vi.fn() };
+    const removed = { id: "second", kind: "custom" as const, onEvent: vi.fn(), dispose: vi.fn() };
+    const replacement = { id: removed.id, kind: "custom" as const, onEvent: vi.fn() };
+    const runtime = createAnalyticsRuntime([first, removed], {
+      enabled: true,
+      consent: { analyticsStorage: "granted", adStorage: "denied" }
+    }, {
+      onDiagnostic: (diagnostic) => {
+        if (diagnostic.status === "dispatched" && diagnostic.adapterId === first.id) {
+          runtime.setAdapters([replacement]);
+        }
+      }
+    });
+    const event = {
+      schemaVersion: "1.0.0" as const,
+      type: "ui.button.click",
+      action: "click",
+      component: "Button",
+      timestamp: Date.now()
+    };
+
+    runtime.dispatch(event);
+
+    expect(first.onEvent).toHaveBeenCalledTimes(1);
+    expect(removed.dispose).toHaveBeenCalledTimes(1);
+    expect(removed.onEvent).not.toHaveBeenCalled();
+    expect(replacement.onEvent).not.toHaveBeenCalled();
+    runtime.dispatch(event);
+    expect(replacement.onEvent).toHaveBeenCalledTimes(1);
+  });
+
   it("maps events through GA4 adapter", () => {
     const gtag = vi.fn();
     const adapter = createGA4Adapter({ client: gtag });

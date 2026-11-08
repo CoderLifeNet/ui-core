@@ -122,7 +122,7 @@ export function AccessibilityDiagnostics({
       subtree: true,
       characterData: true,
       attributes: true,
-      attributeFilter: ["aria-describedby", "aria-label", "aria-labelledby", "aria-hidden", "class", "data-ui-core-a11y-ignore",
+      attributeFilter: ["alt", "aria-describedby", "aria-label", "aria-labelledby", "aria-hidden", "class", "data-ui-core-a11y-ignore",
         "for", "hidden", "id", "inert", "role", "style", "title", "type"]
     });
     schedule();

@@ -90,6 +90,12 @@ export function createAnalyticsRuntime(
     return undefined;
   };
 
+  const adapterBlockReason = (adapter: AnalyticsAdapter): AnalyticsBlockReason | undefined => {
+    if (!(config.adapterEnabled?.[adapter.id] ?? config.enabled)) return "adapter_disabled";
+    if (adapter.kind === "meta-pixel" && config.consent.adStorage !== "granted") return "ad_consent_denied";
+    return undefined;
+  };
+
   const deliverEvent = (event: UIEvent, context?: Partial<ExtensionDispatchContext>): void => {
     const reason = blockReason(event, context);
     if (reason) {
@@ -97,14 +103,11 @@ export function createAnalyticsRuntime(
       return;
     }
     for (const adapter of adapters) {
+      if (!adapters.includes(adapter)) continue;
       const adapterId = adapter.id;
-      const adapterEnabled = config.adapterEnabled?.[adapterId] ?? config.enabled;
-      if (!adapterEnabled) {
-        if (observer) report(event, { status: "blocked", reason: "adapter_disabled", adapterId });
-        continue;
-      }
-      if (adapter.kind === "meta-pixel" && config.consent.adStorage !== "granted") {
-        if (observer) report(event, { status: "blocked", reason: "ad_consent_denied", adapterId });
+      const adapterReason = adapterBlockReason(adapter);
+      if (adapterReason) {
+        if (observer) report(event, { status: "blocked", reason: adapterReason, adapterId });
         continue;
       }
       if (!shouldSample(clampSampleRate(config.adapterSampleRate?.[adapterId] ?? config.defaultSampleRate ?? 1))) {
@@ -116,10 +119,16 @@ export function createAnalyticsRuntime(
           if (observer) report(event, { status: "tracker_unavailable", adapterId });
           continue;
         }
+        if (!adapters.includes(adapter)) continue;
         const currentBlockReason = blockReason(event, context);
         if (currentBlockReason) {
           if (observer) report(event, { status: "blocked", reason: currentBlockReason });
           return;
+        }
+        const currentAdapterReason = adapterBlockReason(adapter);
+        if (currentAdapterReason) {
+          if (observer) report(event, { status: "blocked", reason: currentAdapterReason, adapterId });
+          continue;
         }
         const result = adapter.onEvent(event, buildDispatchContext(context));
         if (result) {

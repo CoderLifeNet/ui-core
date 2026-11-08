@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AccessibilityDiagnostics, scanAccessibility } from "../src/accessibility/index.js";
 import { Dialog, DialogTitle, IconButton, TextField } from "../src/index.js";
@@ -6,6 +6,27 @@ import { Dialog, DialogTitle, IconButton, TextField } from "../src/index.js";
 afterEach(cleanup);
 
 describe("accessibility diagnostics", () => {
+  it("reports an IconButton that loses its name when an image alt changes", async () => {
+    const onIssue = vi.fn();
+    render(
+      <>
+        <AccessibilityDiagnostics enabled onIssue={onIssue} />
+        <IconButton><img alt="Close" /></IconButton>
+      </>
+    );
+    const button = screen.getByRole("button", { name: "Close" });
+    const image = screen.getByRole("img", { name: "Close" });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(onIssue).not.toHaveBeenCalled();
+
+    image.setAttribute("alt", "");
+
+    await waitFor(() => expect(onIssue).toHaveBeenCalledWith(expect.objectContaining({
+      element: button,
+      code: "missing_accessible_name"
+    })));
+  });
+
   it("is opt-in and checks rendered labels, including dialogs in portals", async () => {
     const onIssue = vi.fn();
     const app = (enabled: boolean) => (
