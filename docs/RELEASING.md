@@ -20,7 +20,7 @@ Both npm downloads matched the approved tarballs byte for byte. SLSA provenance
 matched each tarball digest, repository, exact source commit, `main` ref, workflow
 path, and OIDC invocation. A clean npm 11.11.1 signature audit of the exact pair
 verified 88 registry signatures and 24 attestations.
-[Companion release record](https://github.com/CoderLifeNet/ui-components/blob/main/docs/RELEASING.md#verified-020-alpha1-release-closeout-2026-11-08)
+[Companion release record](https://github.com/CoderLifeNet/ui-components/blob/82b4421cf8e730b5a1c8629cdca795b4e7fe4e1f/docs/RELEASING.md#verified-020-alpha1-release-closeout-2026-11-08)
 
 The registry-only Vite 5.4.21 and Next.js 16.3.4 production builds and external
 TypeScript 7.0.2 check passed. All three fixtures resolved both exact registry
