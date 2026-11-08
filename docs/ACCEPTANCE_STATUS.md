@@ -2,11 +2,11 @@
 
 Date: 2026-09-08
 
-## Current npm snapshot (2026-10-12)
+## Current npm snapshot (2026-11-08)
 
-- `@coderlifenet/ui-core`: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- `@coderlifenet/ui-components`: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- Historical `alpha.2` references below remain closeout evidence for that release window.
+- `@coderlifenet/ui-core`: `alpha -> 0.2.0-alpha.1`, `latest -> 0.1.0-alpha.2`.
+- `@coderlifenet/ui-components`: `alpha -> 0.2.0-alpha.1`, `latest -> 0.1.0-alpha.2`.
+- See [release closeout](RELEASING.md#verified-020-alpha1-release-closeout-2026-11-08) for the current registry smoke results. The sections below preserve the earlier `0.1.0-alpha.2` acceptance record.
 
 ## Scope
 

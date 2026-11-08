@@ -1,13 +1,38 @@
 # Public alpha release
 
-## Current npm-verified versions (2026-10-13 UTC)
+## Verified 0.2.0-alpha.1 release closeout (2026-11-08)
 
-- `@coderlifenet/ui-core@0.2.0-alpha.0` is published.
-- Dist-tags for core: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- `@coderlifenet/ui-components@0.2.0-alpha.0` is published.
-- Dist-tags for components: `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
+Both packages are publicly available on npm. For both packages, `alpha` points
+to `0.2.0-alpha.1` and `latest` remains `0.1.0-alpha.2`. Components requires
+exactly `@coderlifenet/ui-core@0.2.0-alpha.1`. Core was published and verified
+before Components was published.
+[Core on npm](https://www.npmjs.com/package/@coderlifenet/ui-core/v/0.2.0-alpha.1) ·
+[Components on npm](https://www.npmjs.com/package/@coderlifenet/ui-components/v/0.2.0-alpha.1)
 
-Published historical closeout below remains valid evidence for the first public alpha publication sequence.
+- Published `main` commit `5de24a12cdd242939a690605e324fc0e635389ac`.
+- Main CI, preparation, and protected OIDC publication passed.
+  [CI](https://github.com/CoderLifeNet/ui-core/actions/runs/42456327747) · [Prepare](https://github.com/CoderLifeNet/ui-core/actions/runs/42458190027) ·
+  [Publish](https://github.com/CoderLifeNet/ui-core/actions/runs/42459311378)
+- Registry tarball SHA-256 `eef47d0f439ae87d8420f9aa3f2f8f3711dca9b96f5a852775f476c409bd0247`.
+- Registry tarball integrity `sha512-5/CqHJBSqQbfjSvXjaeo5ilCxySrjFVeMtB38USk5V7XF7OXXNIjb5vRUVHuir0ADGGpxAluNYj99nLo/U8vkQ==`.
+
+Both npm downloads matched the approved tarballs byte for byte. SLSA provenance
+matched each tarball digest, repository, exact source commit, `main` ref, workflow
+path, and OIDC invocation. A clean npm 11.11.1 signature audit of the exact pair
+verified 88 registry signatures and 24 attestations.
+[Companion release record](https://github.com/CoderLifeNet/ui-components/blob/main/docs/RELEASING.md#verified-020-alpha1-release-closeout-2026-11-08)
+
+The registry-only Vite 5.4.21 and Next.js 16.3.4 production builds and external
+TypeScript 7.0.2 check passed. All three fixtures resolved both exact registry
+packages and shared a single Core installation within each fixture. The external
+fixture resolved one React 19.2.8 and one MUI 9.4.0 version. Chromium passed
+root and subpath event delivery, boundary opt-out, consent revocation, and
+analytics disablement in both apps with zero page or console errors.
+
+Core's standalone consumer also passed strict TypeScript with
+`skipLibCheck: false`, Vite 7.3.7 and Next.js 16.4.5 builds, and Chromium
+checks for SSR markup, hydration, themed buttons, and analytics using the
+tarball downloaded from npm.
 
 ## Verified release closeout (2026-09-11 UTC)
 
