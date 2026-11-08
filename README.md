@@ -13,7 +13,7 @@
 ## Installation
 
 ```bash
-pnpm add @coderlifenet/ui-core@0.2.0-alpha.0 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
+pnpm add @coderlifenet/ui-core@0.2.0-alpha.1 @mui/material@9.4.0 @emotion/react@11.14.0 @emotion/styled@11.14.1 react@19.2.8 react-dom@19.2.8
 ```
 
 Optional coverage:
@@ -137,13 +137,13 @@ Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Swit
 
 `AccordionSummary` keeps the published `ui.accordion.toggle` event contract. For `Autocomplete` composites, focus/blur ownership is assigned to `Autocomplete` (not the wrapped render-input `TextField`) to prevent duplicate logical focus events.
 
-## npm Verification Snapshot (2026-10-12)
+## npm Verification Snapshot (2026-11-08)
 
-- `@coderlifenet/ui-core@0.2.0-alpha.0` is published on npm.
-- Dist-tags currently resolve to `alpha -> 0.2.0-alpha.0`, `latest -> 0.1.0-alpha.2`.
-- `@coderlifenet/ui-components@0.2.0-alpha.0` is published with npm attestation-backed provenance.
+- `@coderlifenet/ui-core@0.2.0-alpha.1` is published on npm.
+- Dist-tags currently resolve to `alpha -> 0.2.0-alpha.1`, `latest -> 0.1.0-alpha.2`.
+- `@coderlifenet/ui-components@0.2.0-alpha.1` is published with npm attestation-backed provenance.
 
-Use exact versions for coordinated installs (`@coderlifenet/ui-core@0.2.0-alpha.0` + `@coderlifenet/ui-components@0.2.0-alpha.0`) and do not rely on `latest`.
+Use exact versions for coordinated installs (`@coderlifenet/ui-core@0.2.0-alpha.1` + `@coderlifenet/ui-components@0.2.0-alpha.1`) and do not rely on `latest`.
 
 For source-review runs, identify local release bytes by source commit plus `pnpm pack:local` hash output.
 
