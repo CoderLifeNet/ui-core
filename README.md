@@ -137,7 +137,7 @@ Focus/blur coverage for `Select`, `Autocomplete`, `Checkbox`, `Radio`, and `Swit
 
 `AccordionSummary` keeps the published `ui.accordion.toggle` event contract. For `Autocomplete` composites, focus/blur ownership is assigned to `Autocomplete` (not the wrapped render-input `TextField`) to prevent duplicate logical focus events.
 
-## npm Verification Snapshot (2026-10-12)
+## npm Verification Snapshot (2026-11-08)
 
 - `@coderlifenet/ui-core@0.2.0-alpha.1` is published on npm.
 - Dist-tags currently resolve to `alpha -> 0.2.0-alpha.1`, `latest -> 0.1.0-alpha.2`.
